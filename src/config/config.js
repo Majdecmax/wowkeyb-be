@@ -6,8 +6,7 @@ const configLoadResult = dotenv.config();
 if(configLoadResult.error) {
     throw configLoadResult.error;
 }
-console.log('configLoadResult',configLoadResult);
-console.log('process.env', process.env);
+
 const Config = {
     nodeEnv: (process.env.NODE_ENV || 'development'),
     appName: appConfig.name,
@@ -19,5 +18,5 @@ const Config = {
     region: process.env.REGION,
     endpoint: process.env.ENDPOINT,
 }
-console.log('new Config',Config)
+
 export default Config;
