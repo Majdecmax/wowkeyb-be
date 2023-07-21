@@ -6,7 +6,6 @@ const port = Config.appPort;
 
 
 app.get('/', (req, res) => {
-  console.log('process.env.APP_URL',process.env.APP_URL)
   console.log('Config',Config);
   res.send('Welcome to Wowkeyb!')
 })
