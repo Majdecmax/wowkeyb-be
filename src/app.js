@@ -2,13 +2,15 @@ import express from 'express';
 import Config from './config/config.js';
 
 const app = express()
+const port = Config.appPort;
 
-console.log('process.env.APP_URL',process.env.APP_URL)
 
 app.get('/', (req, res) => {
+  console.log('process.env.APP_URL',process.env.APP_URL)
+  console.log('Config',Config);
   res.send('Welcome to Wowkeyb!')
 })
 
-app.listen(Config.appPort, () => {
-  console.log(`Example app listening on port ${Config.appPort}`)
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
 })
