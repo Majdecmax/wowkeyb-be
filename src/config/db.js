@@ -1,7 +1,7 @@
 import AWS from 'aws-sdk';
 
-import Config from './config';
-console.log('Config',Config)
+import Config from './config.js';
+
 AWS.config.update({
     accessKeyId: Config.accessKeyId,
     secretAccessKey: Config.secretAccessKey,
