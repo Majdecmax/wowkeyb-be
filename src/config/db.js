@@ -9,6 +9,17 @@ AWS.config.update({
     endpoint: Config.endpoint,
 });
 
+//instantiate dynamodb class
+const dynamodb = new AWS.DynamoDB();
+//listing tables
+dynamodb.listTables({}, (err, data)=>{
+    if(err) {
+        console.log(err);
+    } else {
+        console.log(data);
+    }
+});
+
 const db = new AWS.DynamoDB.DocumentClient({convertEmptyValues: true});
 
 export default db;

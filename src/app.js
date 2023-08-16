@@ -1,12 +1,23 @@
 import express from 'express';
-import { Config, auth } from './config/index.js';
+import { Config, auth, DynamoDBTable } from './config/index.js';
+
+import { v4 as uuidv4 } from 'uuid';
+
+
 const { authenticate } = auth;
 const app = express()
 const port = Config.appPort;
 
+const tableName = 'Users';
+const table = new DynamoDBTable(tableName);
 
-
-
+const newRecord = {
+    UserID: uuidv4(),
+    name: 'Logan Two',
+    age: 32
+}
+console.log('table',table);
+await table.create(newRecord);
 
 
 app.get('/', (req, res) => {
