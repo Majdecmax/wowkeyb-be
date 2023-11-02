@@ -24,9 +24,12 @@ const newRecord = {
 console.log('table',table);
 await table.create(newRecord);
 
-
 app.get('/', (req, res) => {
   res.send('Welcome to Wowkeyb backend!')
+})
+
+app.get('/health', (req,res)=>{
+  res.status(200).send('server is up');
 })
 
 app.get('/protected', authenticate, (req, res) => {
