@@ -7,9 +7,14 @@ pipeline {
         
     stage('Cloning Git') {
       steps {
-        git 'https://github.com/Murder-by-numberS/wowkeyb-be'
+        git 'https://github.com/Murder-by-numberS/wowkeyb-be.git'
       }
     }
-          
+        
+    stage('Install dependencies') {
+      steps {
+        sh 'npm install'
+      }
+    }     
   }
 }
