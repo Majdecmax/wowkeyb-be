@@ -16,5 +16,11 @@ pipeline {
         sh 'npm install'
       }
     }     
+
+    stage('Fun Stage') {
+      steps {
+        sh 'echo fun'
+      }
+    }  
   }
 }
