@@ -8,6 +8,11 @@ const { authenticate } = auth;
 const app = express()
 const port = Config.appPort;
 
+
+// Body parsing middleware
+app.use(express.json()); // Parse JSON bodies
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+
 const tableName = 'Users';
 const table = new DynamoDBTable(tableName);
 
