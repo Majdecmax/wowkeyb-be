@@ -17,11 +17,11 @@ pipeline {
       }
     }
 
-    stage('Deploy') {
-      steps {
-        sh 'npm run start'
-      }
-    }
+    // stage('Deploy') {
+    //   steps {
+    //     sh 'npm run start'
+    //   }
+    // }
      
   }
 }
