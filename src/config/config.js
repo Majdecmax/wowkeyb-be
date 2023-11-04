@@ -1,11 +1,13 @@
 import dotenv from 'dotenv';
 
-import appConfig from '../../package.json' assert { type: 'json' }
-
-const configLoadResult = dotenv.config();
-if(configLoadResult.error) {
-    throw configLoadResult.error;
+if(process.env.NODE_ENV !== 'production') {
+    const configLoadResult = dotenv.config();
+    if(configLoadResult.error) {
+        throw configLoadResult.error;
+    }
 }
+
+import appConfig from '../../package.json' assert { type: 'json' }
 
 const Config = {
     nodeEnv: (process.env.NODE_ENV || 'development'),
