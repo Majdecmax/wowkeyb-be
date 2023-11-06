@@ -1,4 +1,4 @@
-name: quickstart
+name: wowkeyb-be
 runtime:
   name: nodejs
   options:
