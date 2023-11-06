@@ -1,12 +1,3 @@
-import dotenv from 'dotenv';
-
-if(process.env.NODE_ENV !== 'production') {
-    const configLoadResult = dotenv.config();
-    if(configLoadResult.error) {
-        throw configLoadResult.error;
-    }
-}
-
 import appConfig from '../../package.json' assert { type: 'json' }
 
 const Config = {
