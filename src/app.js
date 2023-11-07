@@ -7,6 +7,7 @@ const port = Config.appPort;
 //testing
 console.log('process.env.NODE_ENV',process.env.NODE_ENV);
 console.log('trigger build');
+console.log('another trigger build');
 
 app.get('/', (req, res) => {
   res.send('Welcome to Wowkeyb!')
