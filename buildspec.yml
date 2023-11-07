@@ -1,24 +1,20 @@
 version: 0.2
+ 
 phases:
   install:
     runtime-versions:
-      nodejs: 18
+        nodejs: 18
     commands:
-      - npm install
-  pre_build:
-    commands:
-      - echo Installing source NPM dependencies...
+        - echo Installing dependencies...
+        - npm install
+ 
   build:
     commands:
-      - echo Build started on `date`
-      - npm prune --production
-    post_build:
-      commands:
-        - echo Build completed on `date`  
+        - echo Build started on `date`
+        - echo Compiling the Node.js code...
+        - npm run build
+ 
 artifacts:
-  type: zip
   files:
-    - package.json
-    - package-lock.json
-    - "build/**/*"
-    - .ebextensions/**/*
+    - '**/*'
+  discard-paths: yes
