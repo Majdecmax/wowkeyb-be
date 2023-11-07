@@ -10,7 +10,11 @@ console.log('trigger build');
 console.log('another trigger build');
 
 app.get('/', (req, res) => {
-  res.send('Welcome to Wowkeyb!')
+  res.status(200).send(`Welcome to ${Config.nodeEnv} Wowkeyb!`)
+})
+
+app.get('/health', (req,res)=>{
+  res.status(200).send('server is up');
 })
 
 app.listen(port, () => {
