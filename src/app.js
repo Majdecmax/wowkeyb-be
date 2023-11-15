@@ -5,12 +5,12 @@ const app = express();
 const port = Config.appPort;
 
 //testing
-console.log('process.env.NODE_ENV',process.env.NODE_ENV);
+console.log('process.env.NODE_ENV',process.env.APP_ENV);
 console.log('trigger build');
 console.log('another trigger build');
 
 app.get('/', (req, res) => {
-  res.status(200).send(`Welcome to ${Config.nodeEnv} Wowkeyb!`)
+  res.status(200).send(`Welcome to ${Config.appEnv} Wowkeyb!`)
 })
 
 app.get('/health', (req,res)=>{
