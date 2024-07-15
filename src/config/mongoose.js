@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import config from './config.js';
 import Logger from '../utils/logger.js';
 
-// mongoose.connect(config.databaseURI, {}); //uncomment for db access
+mongoose.connect(config.databaseURI, {}); //uncomment for db access
 
 const db = mongoose.connection;
 db.on('error', () => {
