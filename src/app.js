@@ -1,26 +1,26 @@
-import express from 'express'
+//packages
+import express from 'express';
+import helmet from "helmet";
+import cors from 'cors';
+import bodyParser from 'body-parser';
+//config
 import { Config } from './config/index.js';
+
+//routes
+import routes from './routes/index.js';
 
 const app = express();
 const port = Config.appPort;
 
-//testing
-console.log('process.env.NODE_ENV',process.env.APP_ENV);
-console.log('trigger build');
-console.log('another trigger build');
+// app.use(bearerToken());
+app.use(cors());
+app.use(bodyParser.json());
 
-app.get('/', (req, res) => {
-  res.status(200).send(`Welcome to ${Config.appEnv} Wowkeyb!`)
-})
+app.use(helmet())
 
-app.get('/health', (req,res)=>{
-  res.set('Access-Control-Allow-Origin', 'http://localhost:4200');
-  let response = {
-    message: 'server is up'
-  };
-  res.status(200).send(response);
-})
+routes(app);
 
-app.listen(port, () => {
+// eslint-disable-next-line no-unused-vars
+const server = app.listen(port, () => {
   console.log(`Wowkeyb listening on port ${port}`)
 })
