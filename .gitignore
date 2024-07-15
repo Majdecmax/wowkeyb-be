@@ -1,6 +1,4 @@
 node_modules
 
-# dotenv environment variables file
-.env.development
-.env.production
-.env.staging
+# env Files
+.env.*
