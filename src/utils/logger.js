@@ -14,9 +14,46 @@ console.log(`Logger Level set to ${process.env.LOG_LEVEL}`);
   silly: 6
 */
 
+// const Logger = createLogger({
+//   // levels: {
+//   //   error: 0,
+//   //   warn: 1,
+//   //   info: 2,
+//   //   http: 3,
+//   //   verbose: 4,
+//   //   debug: 5,
+//   //   silly: 6
+//   // },
+//   level: process.env.LOG_LEVEL || 'info',
+//   format: format.combine(
+//     // format.colorize(),
+//     format.timestamp({
+//       format: 'YYYY-MM-DD HH:mm:ss'
+//     }),
+//     format.errors({ stack: true }),
+//     format.splat(),
+//     format.json()
+//   ),
+//   defaultMeta: { service: Config.appName },
+//   transports: [
+//     new transports.Console()
+//   ]
+// });
+
+
 const Logger = createLogger({
+  levels: {
+    error: 0,
+    warn: 1,
+    info: 2,
+    http: 3,
+    verbose: 4,
+    debug: 5,
+    silly: 6
+  },
   level: process.env.LOG_LEVEL || 'info',
   format: format.combine(
+    // format.colorize(),
     format.timestamp({
       format: 'YYYY-MM-DD HH:mm:ss'
     }),
@@ -26,8 +63,7 @@ const Logger = createLogger({
   ),
   defaultMeta: { service: Config.appName },
   transports: [
-    new transports.Console()
+    new transports.Console(),
   ]
 });
-
 export default Logger;

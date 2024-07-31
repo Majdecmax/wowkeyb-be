@@ -7,9 +7,14 @@ const userSchema = Schema({
     required: 'true',
     unique: true, // Yes unique one
   },
+  username: {
+    type: String,
+    required: 'true',
+    unique: true
+  },
   confirmed: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   confirmCode: {
     type: String,

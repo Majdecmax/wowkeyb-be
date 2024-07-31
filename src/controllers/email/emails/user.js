@@ -1,14 +1,25 @@
-export const registerUser =
-  `<p>Dear {{ email }},</p>
+export const USER_EMAIL_TEMPLATE_NAMES = {
+  registerUser: 'registerUser',
+  confirmUser: 'confirmUser',
+  createNewPassword: 'createNewPassword',
+  resetPassword: 'resetPassword',
+  resetPasswordConfirm: 'resetPasswordConfirm'
+}
+export const USER_EMAIL_TEMPLATE_SUBJECTS = {
+  registerUser: 'WOWKEYB: Thank You For Registering',
+  confirmUser: 'confirmUser',
+  createNewPassword: 'createNewPassword',
+  resetPassword: 'WOWKEYB: Reset Password',
+  resetPasswordConfirm: 'WOWKEYB: Reset Password Confirm'
+}
+export const USER_EMAIL_TEMPLATES = {
+  registerUser:
+    `<p>Dear {{ email }},</p>
 <br>
 <p>Thank You for Registering A User Account at WOWKEYB</p>
 <br>
-<p>You can login here:
-<a href="{{ loginLink }}">Login</a>
-</p> <br>
-<P>You can view your user dashboard here. <a href={{ userPageLink }}>User
-    Dashboard</a></p>
-<br>
+<p>You need to confirm your account before you can login.
+<p>Click <a href="{{link}}">here</a> to confirm your account.</p>
 
 <p>
 If you have any questions or comments, please <a href="mailto:support@wowkeyb.gg" target="_top">contact us.</a>
@@ -16,9 +27,26 @@ If you have any questions or comments, please <a href="mailto:support@wowkeyb.gg
 
 Thanks,
 
-<p>WOWKEYB Team</p>`;
+<p>WOWKEYB Team</p>`,
 
-export const createNewPassword = `
+  confirmUser: `
+<p>Dear {{ email }},</p>
+<p>
+    Please click this link to confirm creation.
+</p>
+<a href="{{ resetLink }}">{{ resetLink }}</a>
+<p>
+    This link will work for 24 hours or until your password is reset.</p>
+<p>
+    If you have any questions or comments, please <a href="mailto:support@wowkeyb.gg" target="_top">contact
+        us.</a>
+</p>
+
+Thanks,
+
+<p>WOWKEYB Team</p>`,
+
+  createNewPassword: `
 <p>Dear {{ email }},</p>
 <p>
     Please create a new password. Click on the link below or paste this into your browser to complete the process:
@@ -33,9 +61,9 @@ export const createNewPassword = `
 
 Thanks,
 
-<p>WOWKEYB Team</p>`;
+<p>WOWKEYB Team</p>`,
 
-export const resetPassword = `
+  resetPassword: `
 <p>Dear {{ email }},</p>
 <p>
     We have received a request to reset the password for your account.
@@ -54,9 +82,9 @@ export const resetPassword = `
 
 Thanks,
 
-<p>WOWKEYB Team</p>`;
+<p>WOWKEYB Team</p>`,
 
-export const resetPasswordConfirm = `
+  resetPasswordConfirm: `
 <p>Dear
     {{ email }},</p>
 <p>
@@ -65,4 +93,5 @@ export const resetPasswordConfirm = `
 <p>
     If you didn’t make this request,
     <a href="mailto:support@wowkeyb.gg" target="_top">contact Us</a>
-</p>`;
+</p>`
+}

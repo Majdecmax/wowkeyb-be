@@ -10,6 +10,8 @@ USER006 - Error Resetting User Password
 USER007 - Error Creating New Password
 USER008 - Reset Time is Invalid
 USER009 - Duplicate Reset Code
+USER010 - Invalid Confirm Code
+USER011 - Reset Code Already Used
 
 Token
 TOK001 - Error Creating Token
