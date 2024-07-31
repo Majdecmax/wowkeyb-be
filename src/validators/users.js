@@ -8,6 +8,7 @@ export const validateAuth = [
 ];
 
 export const validateRegister = [
+  check('username').isLength({ min: 8 }),
   check('email').isEmail(),
   check('password', 'Password must contain 10 characters, 1 lowercase, 1 uppercase, 1 numeric and 1 special character.')
     .optional()
