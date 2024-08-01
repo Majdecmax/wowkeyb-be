@@ -6,6 +6,8 @@ import bodyParser from 'body-parser';
 //config
 import { Config } from './config/index.js';
 
+import Logger from './utils/logger.js';
+
 //routes
 import routes from './routes/index.js';
 
@@ -17,6 +19,12 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use(helmet())
+
+// Middleware to log HTTP requests
+app.use((req, res, next) => {
+  Logger.http(`${req.method} ${req.url}`);
+  next();
+});
 
 routes(app);
 
