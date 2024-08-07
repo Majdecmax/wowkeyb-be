@@ -3,14 +3,16 @@ export const USER_EMAIL_TEMPLATE_NAMES = {
   confirmUser: 'confirmUser',
   createNewPassword: 'createNewPassword',
   resetPassword: 'resetPassword',
-  resetPasswordConfirm: 'resetPasswordConfirm'
+  resetPasswordConfirm: 'resetPasswordConfirm',
+  changePassword: 'changePassword'
 }
 export const USER_EMAIL_TEMPLATE_SUBJECTS = {
   registerUser: 'WOWKEYB: Thank You For Registering',
-  confirmUser: 'confirmUser',
+  confirmUser: 'WOWKYEB: Confirm User',
   createNewPassword: 'createNewPassword',
   resetPassword: 'WOWKEYB: Reset Password',
-  resetPasswordConfirm: 'WOWKEYB: Reset Password Confirm'
+  resetPasswordConfirm: 'WOWKEYB: Reset Password Confirm',
+  changePassword: 'WOWKEYB: Password Changed'
 }
 export const USER_EMAIL_TEMPLATES = {
   registerUser:
@@ -85,6 +87,17 @@ Thanks,
 <p>WOWKEYB Team</p>`,
 
   resetPasswordConfirm: `
+<p>Dear
+    {{ email }},</p>
+<p>
+    Your Password was successfully changed.
+</p>
+<p>
+    If you didn’t make this request,
+    <a href="mailto:support@wowkeyb.gg" target="_top">contact Us</a>
+</p>`,
+
+  changePassword: `
 <p>Dear
     {{ email }},</p>
 <p>

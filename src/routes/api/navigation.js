@@ -16,13 +16,13 @@ router.get('/', (req, res) => {
               "id": "keybinds.create",
               "title": "Create",
               "type": "basic",
-              "link": "/pages/keybinds/create"
+              "link": "/keybinds/create"
             },
             {
               "id": "keybinds.view",
               "title": "View",
               "type": "basic",
-              "link": "/pages/keybinds/view"
+              "link": "/keybinds/view"
             }
           ]
         },
@@ -36,13 +36,13 @@ router.get('/', (req, res) => {
               "id": "macros.create",
               "title": "Create",
               "type": "basic",
-              "link": "/pages/macros/create"
+              "link": "/macros/create"
             },
             {
               "id": "macros.view",
               "title": "View",
               "type": "basic",
-              "link": "/pages/macros/view"
+              "link": "/macros/view"
             }
           ]
         },
@@ -1122,13 +1122,13 @@ router.get('/', (req, res) => {
               "id": "keybinds.create",
               "title": "Create",
               "type": "basic",
-              "link": "/pages/keybinds/create"
+              "link": "/keybinds/create"
             },
             {
               "id": "keybinds.view",
               "title": "View",
               "type": "basic",
-              "link": "/pages/keybinds/view"
+              "link": "/keybinds/view"
             }
           ]
         },
@@ -1142,13 +1142,13 @@ router.get('/', (req, res) => {
               "id": "macros.create",
               "title": "Create",
               "type": "basic",
-              "link": "/pages/macros/create"
+              "link": "/macros/create"
             },
             {
               "id": "macros.view",
               "title": "View",
               "type": "basic",
-              "link": "/pages/macros/view"
+              "link": "/macros/view"
             }
           ]
         },
