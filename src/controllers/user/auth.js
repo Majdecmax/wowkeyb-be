@@ -447,3 +447,70 @@ export const setNewPassword = async (req, res) => {
   }
 
 }
+
+export const changePassword = async (req, res) => {
+
+  Logger.info('inside changePassword');
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    Logger.error(`We have Errors: ${errors.array()}`)
+    return res.status(422).json({ error: errors.array() });
+  }
+
+  try {
+
+    const { decoded: { userID } } = req;
+
+    const user = await User.findById(userID);
+
+    if (!user) {
+      Logger.error('User Not Found');
+      return res
+        .status(400)
+        .json({ code: "USER012", message: "Error Changing Password" });
+    }
+
+    const oldPassword = req.body.op; // old password
+    const newPassword = req.body.np;
+
+    //make sure its the right old password
+    const valid = await bcrypt.compare(oldPassword, user.encryptedPassword);
+
+    if (!valid) {
+      Logger.error('Invalid Password');
+      return res
+        .status(400)
+        .json({ code: "USER012", message: "Error Changing Password" });
+    }
+
+    Logger.info(`Setting new password for user ${user._id}`);
+
+    const passwordSalt = await bcrypt.genSalt(saltRounds);
+    const encryptedPassword = await bcrypt.hash(newPassword, passwordSalt);
+
+    user.encryptedPassword = encryptedPassword;
+    await user.save();
+
+    Logger.info('Change Password Successful');
+
+    //send email
+    const data = {
+      email: user.email,
+    };
+    console.log('data', data);
+
+    const to = user.email;
+
+    sendEmailWithTemplate(USER_EMAIL_TEMPLATE_NAMES.changePassword, to, data);
+
+    return res.status(200).json({ changed: true, message: "Change Password Successful" });
+
+  } catch (e) {
+    Logger.error('Error Changing Password')
+    return res
+      .status(500)
+      .json({ code: "USER012", message: "Error Changing Password" });
+  }
+
+}
