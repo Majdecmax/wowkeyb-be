@@ -474,6 +474,13 @@ export const changePassword = async (req, res) => {
     const oldPassword = req.body.op; // old password
     const newPassword = req.body.np;
 
+    if (oldPassword === newPassword) {
+      Logger.error('Passwords are the same');
+      return res
+        .status(400)
+        .json({ code: "USER013", message: "Error Changing Password: Passwords are the same." });
+    }
+
     //make sure its the right old password
     const valid = await bcrypt.compare(oldPassword, user.encryptedPassword);
 
