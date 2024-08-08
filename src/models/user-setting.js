@@ -6,9 +6,14 @@ const userSettingSchema = Schema({
     type: String,
     default: "light",
   },
+  theme: {
+    type: String,
+    default: "theme-default",
+  },
   userId: {
     type: Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    unique: true
   },
 }, {
   timestamps: true

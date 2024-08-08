@@ -35,3 +35,8 @@ export const validateChangePassword = [
   check('np', 'Password must contain 10 characters, 1 lowercase, 1 uppercase, 1 numeric and 1 special character.')
     .matches(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{10,}$/, 'g')
 ];
+
+export const validateSaveSetting = [
+  check('theme').isString().optional(),
+  check('scheme').isString().optional()
+];
