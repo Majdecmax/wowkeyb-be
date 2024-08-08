@@ -14,9 +14,9 @@ const AuthnMiddleware = {
 
       try {
         const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
-        const { userID } = decoded;
+        const { userId } = decoded;
 
-        if (!userID) {
+        if (!userId) {
           return res.status(401).send({ code: "TOK003", message: 'Token is not valid' });
         }
 
