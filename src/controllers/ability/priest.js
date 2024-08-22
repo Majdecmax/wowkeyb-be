@@ -1,4 +1,4 @@
-const priestAbilities = {
+const specAbilities = {
   holy: {
     abilities: [
       {
@@ -43,7 +43,9 @@ const priestAbilities = {
         description: 'Heals all party or raid members within 40 yards for a large amount over 8 seconds.',
         icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_divinehymn.jpg'
       }
-    ]
+    ],
+    'archon': [],
+    'oracle': []
   },
   discipline: {
     abilities: [
@@ -89,7 +91,9 @@ const priestAbilities = {
         description: 'Immediately grants a large amount of absorption to your Power Word: Shield.',
         icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_rapture.jpg'
       }
-    ]
+    ],
+    'oracle': [],
+    'voidweaver': []
   },
   shadow: {
     abilities: [
@@ -135,9 +139,12 @@ const priestAbilities = {
         description: 'Releases an explosive blast of pure void energy, causing Shadow damage to all enemies within 10 yards.',
         icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_voideruption.jpg'
       }
-    ]
+    ],
+    'archon': [],
+    'voidweaver': []
   }
 };
 
+const abilities = [];
 
-export default abilities
+export default { specAbilities, abilities }
