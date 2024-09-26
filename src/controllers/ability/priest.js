@@ -57,6 +57,110 @@ const abilities = [
   }
 ];
 
+const archonAbilities = [
+  {
+    id: 1,
+    name: 'Archon\'s Halo',
+    description: 'Enhances healing abilities and makes Halo an extremely potent healing cooldown.',
+    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_archon.jpg'
+  },
+  {
+    id: 2,
+    name: 'Surge of Light',
+    description: 'Improves triage healing capabilities with stronger Surge of Light procs.',
+    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_surgeoflight.jpg'
+  },
+  {
+    id: 3,
+    name: 'Holy Word: Salvation',
+    description: 'Additional healing after Holy Word: Salvation and during Apotheosis.',
+    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_salvation.jpg'
+  },
+  {
+    id: 1,
+    name: 'Voidheart',
+    description: 'Increases your Atonement healing massively.',
+    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_voidheart.jpg'
+  },
+  {
+    id: 2,
+    name: 'Dark Energy',
+    description: 'Increases your movement speed while a rift is active.',
+    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_darkenergy.jpg'
+  },
+  {
+    id: 3,
+    name: 'Entropic Rift',
+    description: 'Every Mind Blast opens an Entropic Rift that deals damage and provides buffs.',
+    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_entropicrift.jpg'
+  },
+  {
+    id: 1,
+    name: 'Void Eruption',
+    description: 'Unleashes an eruption of void energy, dealing Shadow damage to all enemies within 10 yards.',
+    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_voideruption.jpg'
+  },
+  {
+    id: 2,
+    name: 'Dark Ascension',
+    description: 'Ascend into darkness, increasing your Shadow damage dealt for a short duration.',
+    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_darkascension.jpg'
+  },
+  {
+    id: 3,
+    name: 'Mind Spike: Insanity',
+    description: 'Empowers your Mind Spike, causing it to deal significantly more damage.',
+    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_mindspike.jpg'
+  }
+];
+
+const oracleAbilities = [
+  {
+    id: 1,
+    name: 'Future Sight',
+    description: 'Grants insights into the future to protect and empower allies.',
+    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_futuresight.jpg'
+  },
+  {
+    id: 2,
+    name: 'Blessings of the Oracle',
+    description: 'Bestows unique blessings and benefits upon allies before they are needed.',
+    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_blessingsoftheoracle.jpg'
+  },
+  {
+    id: 1,
+    name: 'Embrace the Shadow',
+    description: 'Gives you additional damage reduction to all magic damage and heals you when struck by shadow damage.',
+    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_embracetheshadow.jpg'
+  },
+  {
+    id: 2,
+    name: 'Darkening Horizon',
+    description: 'Provides significant buffs and benefits, making it the default choice for many situations.',
+    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_darkeninghorizon.jpg'
+  }
+];
+const voidweaverAbilities = [
+  {
+    id: 1,
+    name: 'Void Torrent',
+    description: 'Channels a torrent of void energy, dealing massive Shadow damage over time.',
+    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_voidtorrent.jpg'
+  },
+  {
+    id: 2,
+    name: 'Shadow Crash',
+    description: 'Hurls a bolt of slow-moving Shadow energy at the destination, dealing Shadow damage to all enemies within 8 yards.',
+    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_shadowcrash.jpg'
+  },
+  {
+    id: 3,
+    name: 'Surrender to Madness',
+    description: 'Surrender to the Old Gods, increasing your damage dealt but causing you to take increased damage.',
+    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_surrendertomadness.jpg'
+  }
+];
+
 const specAbilities = {
   holy: {
     abilities: [
@@ -177,108 +281,6 @@ const specAbilities = {
 
 }
 
-const archonAbilities = [
-  {
-    id: 1,
-    name: 'Archon\'s Halo',
-    description: 'Enhances healing abilities and makes Halo an extremely potent healing cooldown.',
-    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_archon.jpg'
-  },
-  {
-    id: 2,
-    name: 'Surge of Light',
-    description: 'Improves triage healing capabilities with stronger Surge of Light procs.',
-    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_surgeoflight.jpg'
-  },
-  {
-    id: 3,
-    name: 'Holy Word: Salvation',
-    description: 'Additional healing after Holy Word: Salvation and during Apotheosis.',
-    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_salvation.jpg'
-  },
-  {
-    id: 1,
-    name: 'Voidheart',
-    description: 'Increases your Atonement healing massively.',
-    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_voidheart.jpg'
-  },
-  {
-    id: 2,
-    name: 'Dark Energy',
-    description: 'Increases your movement speed while a rift is active.',
-    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_darkenergy.jpg'
-  },
-  {
-    id: 3,
-    name: 'Entropic Rift',
-    description: 'Every Mind Blast opens an Entropic Rift that deals damage and provides buffs.',
-    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_entropicrift.jpg'
-  },
-  {
-    id: 1,
-    name: 'Void Eruption',
-    description: 'Unleashes an eruption of void energy, dealing Shadow damage to all enemies within 10 yards.',
-    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_voideruption.jpg'
-  },
-  {
-    id: 2,
-    name: 'Dark Ascension',
-    description: 'Ascend into darkness, increasing your Shadow damage dealt for a short duration.',
-    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_darkascension.jpg'
-  },
-  {
-    id: 3,
-    name: 'Mind Spike: Insanity',
-    description: 'Empowers your Mind Spike, causing it to deal significantly more damage.',
-    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_mindspike.jpg'
-  }
-];
 
-const oracleAbilities = [
-  {
-    id: 1,
-    name: 'Future Sight',
-    description: 'Grants insights into the future to protect and empower allies.',
-    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_futuresight.jpg'
-  },
-  {
-    id: 2,
-    name: 'Blessings of the Oracle',
-    description: 'Bestows unique blessings and benefits upon allies before they are needed.',
-    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_blessingsoftheoracle.jpg'
-  },
-  {
-    id: 1,
-    name: 'Embrace the Shadow',
-    description: 'Gives you additional damage reduction to all magic damage and heals you when struck by shadow damage.',
-    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_embracetheshadow.jpg'
-  },
-  {
-    id: 2,
-    name: 'Darkening Horizon',
-    description: 'Provides significant buffs and benefits, making it the default choice for many situations.',
-    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_darkeninghorizon.jpg'
-  }
-];
-const voidweaverAbilities = [
-  {
-    id: 1,
-    name: 'Void Torrent',
-    description: 'Channels a torrent of void energy, dealing massive Shadow damage over time.',
-    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_voidtorrent.jpg'
-  },
-  {
-    id: 2,
-    name: 'Shadow Crash',
-    description: 'Hurls a bolt of slow-moving Shadow energy at the destination, dealing Shadow damage to all enemies within 8 yards.',
-    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_shadowcrash.jpg'
-  },
-  {
-    id: 3,
-    name: 'Surrender to Madness',
-    description: 'Surrender to the Old Gods, increasing your damage dealt but causing you to take increased damage.',
-    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_shadow_surrendertomadness.jpg'
-  }
-];
 
 export default { specAbilities, abilities }
