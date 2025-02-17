@@ -2,7 +2,7 @@ import { createLogger, format, transports } from 'winston';
 
 import Config from '../config/config.js';
 
-console.log(`Logger Level set to ${process.env.LOG_LEVEL}`);
+console.log(`Logger Level set to ${Config.logLevel}`);
 
 /*
   error: 0,
@@ -51,7 +51,7 @@ const Logger = createLogger({
     debug: 5,
     silly: 6
   },
-  level: process.env.LOG_LEVEL || 'info',
+  level: Config.logLevel || 'info',
   format: format.combine(
     // format.colorize(),
     format.timestamp({

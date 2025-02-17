@@ -10,7 +10,7 @@ const userSettingSchema = Schema({
     type: String,
     default: "theme-default",
   },
-  userId: {
+  user_id: {
     type: Schema.Types.ObjectId,
     ref: 'User',
     unique: true

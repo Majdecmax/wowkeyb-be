@@ -53,12 +53,12 @@ export const saveSetting = async (req, res) => {
   }
   console.log('updatePayload', updatePayload);
   try {
-    await UserSetting.updateOne({ userId: decoded.userId }, updatePayload)
+    await UserSetting.updateOne({ user_id: decoded.user_id }, updatePayload)
 
     return res.status(200).send({ message: 'Settings Updated' });
   }
   catch (e) {
-    Logger.error(`Error saving setting for user ${decoded.userId}`);
+    Logger.error(`Error saving setting for user ${decoded.user_id}`);
     return res.status(500).json(e.message);
   }
 }

@@ -9,6 +9,7 @@ const Config = {
   appURL: process.env.APP_URL || 'http://localhost:1337',
   appVersion: appConfig.version,
   // appSecretKey: process.env.SECRET_KEY,
+  logLevel: process.env.LOG_LEVEL || 'info',
 
   feURL: process.env.FE_URL || 'http://localhost:4200',
 
