@@ -54,11 +54,10 @@ export const createKeybinding = async (req, res, next) => {
       spec: randomClass.spec,
       hero_talent: randomClass.heroTalent
     }
-    console.log('newKeybinding', newKeybinding);
+
     const createdKeybinding = await Keybinding.create(newKeybinding);
-    console.log('createdKeybinding', createdKeybinding);
-    console.log('present createdKeybinding', presentOne(createdKeybinding))
-    return res.status(200).send({ message: 'OK' });
+
+    return res.status(200).send(presentOne(createdKeybinding));
   } catch (error) {
     next(error);
   }
