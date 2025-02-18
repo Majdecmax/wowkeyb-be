@@ -1,8 +1,8 @@
 import Logger from '../../utils/logger.js';
 import { validationResult } from "express-validator";
 
-import deathKnight from './death-knight.js';
-import demonHunter from './demon-hunter.js';
+import deathknight from './death-knight.js';
+import demonhunter from './demon-hunter.js';
 import druid from './druid.js';
 import evoker from './evoker.js';
 import hunter from './hunter.js';
@@ -15,8 +15,8 @@ import warlock from './warlock.js';
 import warrior from './warrior.js';
 
 const classes = {
-  deathKnight,
-  demonHunter,
+  deathknight,
+  demonhunter,
   druid,
   evoker,
   hunter,
@@ -30,6 +30,7 @@ const classes = {
 }
 
 export const getAbilities = async (req, res) => {
+  console.log('Retrieving  abilities', req.params);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

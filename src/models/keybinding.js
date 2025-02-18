@@ -3,8 +3,8 @@ const { Schema } = mongoose;
 
 // Enum definitions
 const CLASS_ENUM = [
-  'deathKnight',
-  'demonHunter',
+  'deathknight',
+  'demonhunter',
   'druid',
   'evoker',
   'hunter',
@@ -19,11 +19,11 @@ const CLASS_ENUM = [
 ];
 
 const SPEC_ENUM = {
-  deathKnight: ['blood', 'frost', 'unholy'],
-  demonHunter: ['havoc', 'vengeance'],
+  deathknight: ['blood', 'frost', 'unholy'],
+  demonhunter: ['havoc', 'vengeance'],
   druid: ['balance', 'feral', 'guardian', 'restoration'],
   evoker: ['devastation', 'preservation', 'augmentation'],
-  hunter: ['beastmastery', 'marksmanship', 'survival'],
+  hunter: ['beast-mastery', 'marksmanship', 'survival'],
   mage: ['arcane', 'fire', 'frost'],
   monk: ['brewmaster', 'mistweaver', 'windwalker'],
   paladin: ['holy', 'protection', 'retribution'],
@@ -38,8 +38,8 @@ const SPEC_ENUM = {
 const SPEC_ENUM_FLAT = Object.values(SPEC_ENUM).flat();
 
 const HERO_TALENTS_ENUM = {
-  deathKnight: ['deathbringer', 'san-layn', 'rider-of-the-apocalypse'],
-  demonHunter: ['aldrachi-reaver', 'fel-scarred'],
+  deathknight: ['deathbringer', 'san-layn', 'rider-of-the-apocalypse'],
+  demonhunter: ['aldrachi-reaver', 'fel-scarred'],
   druid: ['elunes-chosen', 'keeper-of-the-grove', 'druid-of-the-claw', 'wildstalker'],
   evoker: ['flameshaper', 'scalecommander', 'chronowarden'],
   hunter: ['dark-ranger', 'pack-leader', 'sentinel'],
