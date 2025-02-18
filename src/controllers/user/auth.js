@@ -51,13 +51,13 @@ export const login = async (req, res) => {
         .json({ code: "USER004", message: "Error Logging In User" }); // don't reveal wrong password
     }
 
-    let userSettings = await UserSetting.findOne({ userId: user._id });
+    let userSettings = await UserSetting.findOne({ user_id: user._id });
 
     if (!userSettings) {
       //create settings
       let defaultSettings = {
         scheme: "light",
-        userId: user._id,
+        user_id: user._id,
       };
 
       userSettings = await UserSetting.create(defaultSettings);
@@ -69,13 +69,13 @@ export const login = async (req, res) => {
     const token = jwt.sign(
       {
         accessLevel: user.accessLevel,
-        userId: user._id
+        user_id: user._id
       },
       process.env.TOKEN_SECRET,
       { expiresIn: process.env.TOKEN_EXPIRATION });
     console.log('token', token);
     //store token in db
-    await Token.create({ userId: user._id, token, token_type: 'verification' });
+    await Token.create({ user_id: user._id, token, token_type: 'verification' });
 
     //return with user model, token and user settings
     const payload = {
@@ -232,18 +232,18 @@ export const refreshAccessToken = async (req, res) => {
       return res.status(401).json({ err: "Invalid Token!" });
     }
 
-    const { userId } = verifiedToken;
+    const { user_id } = verifiedToken;
 
     //find the user
-    const user = await User.findOne({ _id: userId });
+    const user = await User.findOne({ _id: user_id });
 
     if (!user) {
-      Logger.error(`Could not find user ${userId}`);
+      Logger.error(`Could not find user ${user_id}`);
       return res.status(401).json({ err: "Invalid Token!" });
     }
 
     let settingsQuery = {
-      userId: user._id,
+      user_id: user._id,
     };
 
     //find the settings
@@ -254,7 +254,7 @@ export const refreshAccessToken = async (req, res) => {
 
       let defaultSettings = {
         scheme: "light",
-        userId: user._id,
+        user_id: user._id,
       };
       // If user logged in successfully we return user, token, and settings as response
       userSettings = await UserSetting.create(defaultSettings);
@@ -263,13 +263,13 @@ export const refreshAccessToken = async (req, res) => {
     const token = jwt.sign(
       {
         accessLevel: user.accessLevel,
-        userId: user._id
+        user_id: user._id
       },
       process.env.TOKEN_SECRET,
       { expiresIn: process.env.TOKEN_EXPIRATION });
 
     //store token in db
-    await Token.create({ userId: user._id, token, token_type: 'verification' });
+    await Token.create({ user_id: user._id, token, token_type: 'verification' });
 
     Logger.info('Refreshed Token Successfully');
 
@@ -460,9 +460,9 @@ export const changePassword = async (req, res) => {
 
   try {
 
-    const { decoded: { userId } } = req;
+    const { decoded: { user_id } } = req;
 
-    const user = await User.findById(userId);
+    const user = await User.findById(user_id);
 
     if (!user) {
       Logger.error('User Not Found');

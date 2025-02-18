@@ -1,0 +1,146 @@
+import mongoose from 'mongoose';
+const { Schema } = mongoose;
+
+// Enum definitions
+const CLASS_ENUM = [
+  'deathknight',
+  'demonhunter',
+  'druid',
+  'evoker',
+  'hunter',
+  'mage',
+  'monk',
+  'paladin',
+  'priest',
+  'rogue',
+  'shaman',
+  'warlock',
+  'warrior'
+];
+
+const SPEC_ENUM = {
+  deathknight: ['blood', 'frost', 'unholy'],
+  demonhunter: ['havoc', 'vengeance'],
+  druid: ['balance', 'feral', 'guardian', 'restoration'],
+  evoker: ['devastation', 'preservation', 'augmentation'],
+  hunter: ['beast-mastery', 'marksmanship', 'survival'],
+  mage: ['arcane', 'fire', 'frost'],
+  monk: ['brewmaster', 'mistweaver', 'windwalker'],
+  paladin: ['holy', 'protection', 'retribution'],
+  priest: ['discipline', 'holy', 'shadow'],
+  rogue: ['assassination', 'outlaw', 'subtlety'],
+  shaman: ['elemental', 'enhancement', 'restoration'],
+  warlock: ['affliction', 'demonology', 'destruction'],
+  warrior: ['arms', 'fury', 'protection']
+};
+
+// Flatten spec array for mongoose enum
+const SPEC_ENUM_FLAT = Object.values(SPEC_ENUM).flat();
+
+const HERO_TALENTS_ENUM = {
+  deathknight: ['deathbringer', 'san-layn', 'rider-of-the-apocalypse'],
+  demonhunter: ['aldrachi-reaver', 'fel-scarred'],
+  druid: ['elunes-chosen', 'keeper-of-the-grove', 'druid-of-the-claw', 'wildstalker'],
+  evoker: ['flameshaper', 'scalecommander', 'chronowarden'],
+  hunter: ['dark-ranger', 'pack-leader', 'sentinel'],
+  mage: ['spellslinger', 'sunfury', 'frostfire'],
+  monk: ['master-of-harmony', 'shado-pan', 'conduit-of-the-celestials'],
+  paladin: ['herald-of-the-sun', 'lightsmith', 'templar'],
+  priest: ['archon', 'oracle', 'voidweaver'],
+  rogue: ['deathstalker', 'fatebound', 'trickster'],
+  shaman: ['farseer', 'stormbringer', 'totemic'],
+  warlock: ['hellcaller', 'soul-harvester', 'diabolist'],
+  warrior: ['colossus', 'slayer', 'mountain-thane']
+};
+
+// Flatten hero talents array for mongoose enum
+const HERO_TALENTS_ENUM_FLAT = Object.values(HERO_TALENTS_ENUM).flat();
+
+// Rest of the schemas remain the same
+const spellSchema = new Schema({
+  key: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  icon: {
+    type: String,
+    required: true
+  },
+  keybinding: {
+    type: String,
+    required: true
+  },
+  name: {
+    type: String,
+    required: true
+  },
+  spell_id: {
+    type: String,
+    required: true
+  }
+});
+
+const keybindSchema = new Schema({
+  key: {
+    type: String,
+    required: true
+  },
+  spell: {
+    type: spellSchema,
+    required: true
+  }
+});
+
+const keybindingSchema = new Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  user_id: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  class: {
+    type: String,
+    required: true,
+    enum: CLASS_ENUM,
+    lowercase: true
+  },
+  spec: {
+    type: String,
+    enum: SPEC_ENUM_FLAT,
+    lowercase: true
+  },
+  hero_talent: {
+    type: String,
+    enum: HERO_TALENTS_ENUM_FLAT,
+    lowercase: true
+  },
+  keybinds: [{
+    type: keybindSchema,
+    default: []
+  }]
+}, {
+  timestamps: true
+});
+
+// Custom validation for spec based on selected class
+keybindingSchema.path('spec').validate(function (value) {
+  if (!value) return true; // Allow empty spec
+  const classSpecs = SPEC_ENUM[this.class];
+  return classSpecs && classSpecs.includes(value);
+}, 'Invalid spec for the selected class');
+
+// Add custom validation for hero_talent based on selected class
+keybindingSchema.path('hero_talent').validate(function (value) {
+  if (!value) return true; // Allow empty hero_talent
+  const classHeroTalents = HERO_TALENTS_ENUM[this.class];
+  return classHeroTalents && classHeroTalents.includes(value);
+}, 'Invalid hero talent for the selected class');
+
+const Keybinding = mongoose.model('Keybinding', keybindingSchema);
+export default Keybinding;

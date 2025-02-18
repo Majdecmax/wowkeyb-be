@@ -1,8 +1,8 @@
 import Logger from '../../utils/logger.js';
 import { validationResult } from "express-validator";
 
-import deathKnight from './death-knight.js';
-import demonHunter from './demon-hunter.js';
+import deathknight from './death-knight.js';
+import demonhunter from './demon-hunter.js';
 import druid from './druid.js';
 import evoker from './evoker.js';
 import hunter from './hunter.js';
@@ -15,8 +15,8 @@ import warlock from './warlock.js';
 import warrior from './warrior.js';
 
 const classes = {
-  "death-knight": deathKnight,
-  "demon-hunter": demonHunter,
+  deathknight,
+  demonhunter,
   druid,
   evoker,
   hunter,
@@ -30,6 +30,7 @@ const classes = {
 }
 
 export const getAbilities = async (req, res) => {
+  console.log('Retrieving  abilities', req.params);
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -47,4 +48,25 @@ export const getAbilities = async (req, res) => {
   ];
 
   return res.status(200).send(abilities);
+}
+
+export const generateRandomClassDetails = () => {
+  // Get random class
+  const classNames = Object.keys(classes);
+  const randomClass = classNames[Math.floor(Math.random() * classNames.length)];
+
+  // Get random spec for the selected class
+  const specs = Object.keys(classes[randomClass].specAbilities);
+  const randomSpec = specs[Math.floor(Math.random() * specs.length)];
+
+  // Get random hero talent for the spec
+  const heroTalents = Object.keys(classes[randomClass].specAbilities[randomSpec])
+    .filter(key => key !== 'abilities'); // Filter out the 'abilities' key
+  const randomHeroTalent = heroTalents[Math.floor(Math.random() * heroTalents.length)];
+
+  return {
+    class: randomClass,
+    spec: randomSpec,
+    heroTalent: randomHeroTalent
+  };
 }

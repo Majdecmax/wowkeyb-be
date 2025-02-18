@@ -1,14 +1,14 @@
-import { check, param } from 'express-validator'
+import { param } from 'express-validator'
 
 export const classes = {
-  'death-knight': {
+  'deathknight': {
     specs: {
       blood: ['deathbringer', 'san-layn'],
       frost: ['deathbringer', 'rider-of-the-apocalypse'],
       unholy: ['rider-of-the-apocalypse', 'san-layn']
     }
   },
-  'demon-hunter': {
+  'demonhunter': {
     specs: {
       havoc: ['aldrachi-reaver', 'fel-scarred'],
       vengeance: ['aldrachi-reaver', 'fel-scarred'],
