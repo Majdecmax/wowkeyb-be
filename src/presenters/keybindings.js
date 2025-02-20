@@ -37,3 +37,7 @@ export const presentOne = (keybinding) => {
     ...mapToData(keybinding)
   }
 }
+
+export const presentMany = (keybindings) => {
+  return keybindings.map(presentOne);
+}

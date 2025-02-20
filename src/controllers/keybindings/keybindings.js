@@ -1,5 +1,5 @@
 import Keybinding from '../../models/keybinding.js';
-import { presentOne } from '../../presenters/keybindings.js';
+import { presentOne, presentMany } from '../../presenters/keybindings.js';
 import Logger from '../../utils/logger.js';
 import { generateRandomClassDetails } from '../ability/abilities.js';
 
@@ -12,9 +12,14 @@ import { generateRandomClassDetails } from '../ability/abilities.js';
  */
 export const getKeybindings = async (req, res, next) => {
   try {
-    // TODO: Implement keybindings retrieval logic
 
-    res.json({ /* response data */ });
+    Logger.info('Getting Keybindings');
+
+    const { user_id } = req.decoded;
+
+    const keybindings = await Keybinding.find({ user_id });
+
+    res.status(200).send(presentMany(keybindings));
   } catch (error) {
     next(error);
   }
@@ -46,13 +51,16 @@ export const createKeybinding = async (req, res, next) => {
   try {
     Logger.info('Creating Keybinding');
 
+    console.log('req.decoded', req.decoded);
+
     const randomClass = generateRandomClassDetails();
     console.log('randomClass', randomClass);
     const newKeybinding = {
       name: 'New Keybinding',
       class: randomClass.class,
       spec: randomClass.spec,
-      hero_talent: randomClass.heroTalent
+      hero_talent: randomClass.heroTalent,
+      user_id: req.decoded?.user_id || null
     }
 
     const createdKeybinding = await Keybinding.create(newKeybinding);

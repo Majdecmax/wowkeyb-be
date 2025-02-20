@@ -9,8 +9,9 @@ const router = new Router();
 
 router.post('/',
   validateCreateKeybinding,
+  AuthnMiddleware.decode,
   KeybindingsController.createKeybinding)
-  .use(AuthnMiddleware.authenticateToken)
+router.use(AuthnMiddleware.authenticateToken)
 router.get('/',
   validateGetKeybindings,
   KeybindingsController.getKeybindings)
