@@ -9,7 +9,10 @@ import { generateCode, saltRounds } from "../../utils/util.js"
 import { sendEmailWithTemplate } from '../email/email.js';
 import { USER_EMAIL_TEMPLATE_NAMES } from '../email/emails/user.js';
 
-import { User, UserSetting, Token } from '../../models/index.js'
+import { User, UserSetting, Token, Keybinding } from '../../models/index.js'
+
+import { presentMany } from '../../presenters/keybindings.js';
+
 
 export const login = async (req, res) => {
   Logger.verbose('Inside Login');
@@ -77,11 +80,15 @@ export const login = async (req, res) => {
     //store token in db
     await Token.create({ user_id: user._id, token, token_type: 'verification' });
 
+    //get keybindings
+    const keybindings = await Keybinding.find({ user_id: user._id });
+
     //return with user model, token and user settings
     const payload = {
       user,
       token,
       userSettings,
+      keybindings: presentMany(keybindings)
     }
 
     return res.status(200).send(payload);
@@ -273,11 +280,15 @@ export const refreshAccessToken = async (req, res) => {
 
     Logger.info('Refreshed Token Successfully');
 
+    //get keybindings
+    const keybindings = await Keybinding.find({ user_id: user._id });
+
     //return with user model, token and user settings
     const payload = {
       user,
       token,
       userSettings,
+      keybindings: presentMany(keybindings)
     }
 
     return res.status(200).send(payload);
