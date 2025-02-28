@@ -1,5 +1,5 @@
 import Keybinding from '../../models/keybinding.js';
-import { presentOne } from '../../presenters/keybindings.js';
+import { presentOne, presentMany } from '../../presenters/keybindings.js';
 import Logger from '../../utils/logger.js';
 import { generateRandomClassDetails } from '../ability/abilities.js';
 
@@ -12,9 +12,14 @@ import { generateRandomClassDetails } from '../ability/abilities.js';
  */
 export const getKeybindings = async (req, res, next) => {
   try {
-    // TODO: Implement keybindings retrieval logic
 
-    res.json({ /* response data */ });
+    Logger.info('Getting Keybindings');
+
+    const { user_id } = req.decoded;
+
+    const keybindings = await Keybinding.find({ user_id });
+
+    res.status(200).send(presentMany(keybindings));
   } catch (error) {
     next(error);
   }
@@ -26,11 +31,47 @@ export const getKeybindings = async (req, res, next) => {
  * @param {import('express').Response} res
  * @param {import('express').NextFunction} next
  */
-export const saveKeybinding = async (req, res, next) => {
+export const updateKeybinding = async (req, res, next) => {
   try {
-    // TODO: Implement keybinding update logic
+    const { keybinding_id } = req.params;
+    console.log('keybinding_id', keybinding_id);
+    const keybinding = await Keybinding.findById(keybinding_id);
+    console.log('keybinding', keybinding);
+    if (!keybinding) {
+      return res.status(404).send({ message: 'Keybinding not found' });
+    }
+    console.log('req.body', req.body);
+    //need to convert heroTalent to hero_talent
+    req.body.hero_talent = req.body.heroTalent;
+    delete req.body.heroTalent;
 
-    res.json({ /* response data */ });
+    // Normalize class field if it exists
+    if (req.body.class) {
+      req.body.class = req.body.class.toLowerCase().replace(/\s+/g, '');
+    }
+    if (req.body.spec) {
+      req.body.spec = req.body.spec.toLowerCase();
+
+      if (req.body.spec === 'beast mastery') {
+        req.body.spec = 'beast-mastery';
+      }
+    }
+
+    if (req.body.hero_talent) {
+      req.body.hero_talent = req.body.hero_talent.toLowerCase();
+      //if there is a space in the hero_talent, replace it with a dash
+      if (req.body.hero_talent.includes(' ')) {
+        req.body.hero_talent = req.body.hero_talent.replace(' ', '-');
+      }
+    }
+
+    const updatedKeybinding = await Keybinding.findOneAndUpdate(
+      { _id: keybinding_id },
+      req.body,
+      { new: true }
+    );
+
+    return res.status(200).send(presentOne(updatedKeybinding));
   } catch (error) {
     next(error);
   }
@@ -46,18 +87,39 @@ export const createKeybinding = async (req, res, next) => {
   try {
     Logger.info('Creating Keybinding');
 
+    console.log('req.decoded', req.decoded);
+
     const randomClass = generateRandomClassDetails();
     console.log('randomClass', randomClass);
     const newKeybinding = {
       name: 'New Keybinding',
       class: randomClass.class,
       spec: randomClass.spec,
-      hero_talent: randomClass.heroTalent
+      hero_talent: randomClass.heroTalent,
+      user_id: req.decoded?.user_id || null
     }
 
     const createdKeybinding = await Keybinding.create(newKeybinding);
 
     return res.status(200).send(presentOne(createdKeybinding));
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Delete a keybinding
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export const deleteKeybinding = async (req, res, next) => {
+  try {
+    const { keybinding_id } = req.params;
+
+    await Keybinding.findByIdAndDelete(keybinding_id);
+
+    return res.status(200).send({ message: 'Keybinding deleted' });
   } catch (error) {
     next(error);
   }

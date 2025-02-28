@@ -112,13 +112,15 @@ const keybindingSchema = new Schema({
   },
   spec: {
     type: String,
-    enum: SPEC_ENUM_FLAT,
-    lowercase: true
+    enum: [...SPEC_ENUM_FLAT, null],
+    lowercase: true,
+    default: null
   },
   hero_talent: {
     type: String,
-    enum: HERO_TALENTS_ENUM_FLAT,
-    lowercase: true
+    enum: [...HERO_TALENTS_ENUM_FLAT, null],
+    lowercase: true,
+    default: null
   },
   keybinds: [{
     type: keybindSchema,

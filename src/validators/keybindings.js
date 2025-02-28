@@ -7,7 +7,7 @@ export const validateGetKeybindings = [
 ];
 
 // Validate PUT /api/keybindings
-export const validateSaveKeybinding = [
+export const validateUpdateKeybinding = [
   // body('id').isString().notEmpty(),
   // body('userId').isString().notEmpty(),
   // body('key').isString().notEmpty(),
