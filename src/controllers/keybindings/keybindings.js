@@ -58,11 +58,14 @@ export const updateKeybinding = async (req, res, next) => {
     }
 
     if (req.body.hero_talent) {
+
       req.body.hero_talent = req.body.hero_talent.toLowerCase();
+
       //if there is a space in the hero_talent, replace it with a dash
       if (req.body.hero_talent.includes(' ')) {
-        req.body.hero_talent = req.body.hero_talent.replace(' ', '-');
+        req.body.hero_talent = req.body.hero_talent.replace(/\s+/g, '-');
       }
+
     }
 
     const updatedKeybinding = await Keybinding.findOneAndUpdate(
