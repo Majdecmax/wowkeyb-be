@@ -29,7 +29,16 @@ const mapToData = (keybinding) => ({
   class: toTitleCase(keybinding.class) || null,
   spec: toTitleCase(keybinding.spec) || null,
   heroTalent: toTitleCase(keybinding.hero_talent) || null,
-  keybinds: keybinding.keybinds || []
+  keybinds: (keybinding.keybinds || []).map(keybind => ({
+    key: keybind.key,
+    spell: {
+      key: keybind.spell.key,
+      description: keybind.spell.description,
+      icon: keybind.spell.icon,
+      name: keybind.spell.name,
+      spellId: keybind.spell.spell_id
+    }
+  }))
 })
 
 export const presentOne = (keybinding) => {
