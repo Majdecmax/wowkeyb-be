@@ -34,14 +34,13 @@ export const getKeybindings = async (req, res, next) => {
 export const updateKeybinding = async (req, res, next) => {
   try {
     const { keybinding_id } = req.params;
-    console.log('keybinding_id', keybinding_id);
+
     const keybinding = await Keybinding.findById(keybinding_id);
-    console.log('keybinding', keybinding);
+
     if (!keybinding) {
       return res.status(404).send({ message: 'Keybinding not found' });
     }
-    console.log('req.body', req.body);
-    //need to convert heroTalent to hero_talent
+
     req.body.hero_talent = req.body.heroTalent;
     delete req.body.heroTalent;
 
@@ -67,6 +66,14 @@ export const updateKeybinding = async (req, res, next) => {
       }
 
     }
+
+    req.body.keybinds = req.body.keybinds.map(keybind => {
+      if (keybind.spell.spellId) {
+        keybind.spell.spell_id = keybind.spell.spellId.toString();
+        delete keybind.spell.spellId;
+      }
+      return keybind;
+    })
 
     const updatedKeybinding = await Keybinding.findOneAndUpdate(
       { _id: keybinding_id },
