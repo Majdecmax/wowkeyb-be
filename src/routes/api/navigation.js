@@ -29,22 +29,24 @@ router.get('/', (req, res) => {
         {
           "id": "macros",
           "title": "Macros",
-          "type": "group",
+          "type": "basic",
+          "link": "/macros"
+          // "type": "group",
           // "icon": "",
-          "children": [
-            {
-              "id": "macros.create",
-              "title": "Create",
-              "type": "basic",
-              "link": "/macros/create"
-            },
-            {
-              "id": "macros.view",
-              "title": "View",
-              "type": "basic",
-              "link": "/macros/view"
-            }
-          ]
+          // "children": [
+          //   {
+          //     "id": "macros.create",
+          //     "title": "Create",
+          //     "type": "basic",
+          //     "link": "/macros/create"
+          //   },
+          //   {
+          //     "id": "macros.view",
+          //     "title": "View",
+          //     "type": "basic",
+          //     "link": "/macros/view"
+          //   }
+          // ]
         },
         // {
         //   "id": "apps",
@@ -1135,22 +1137,24 @@ router.get('/', (req, res) => {
         {
           "id": "macros",
           "title": "Macros",
-          "type": "group",
+          "type": "basic",
+          "link": "/macros"
+          // "type": "group",
           // "icon": "",
-          "children": [
-            {
-              "id": "macros.create",
-              "title": "Create",
-              "type": "basic",
-              "link": "/macros/create"
-            },
-            {
-              "id": "macros.view",
-              "title": "View",
-              "type": "basic",
-              "link": "/macros/view"
-            }
-          ]
+          // "children": [
+          //   {
+          //     "id": "macros.create",
+          //     "title": "Create",
+          //     "type": "basic",
+          //     "link": "/macros/create"
+          //   },
+          //   {
+          //     "id": "macros.view",
+          //     "title": "View",
+          //     "type": "basic",
+          //     "link": "/macros/view"
+          //   }
+          // ]
         },
         // {
         //   "id": "apps",
