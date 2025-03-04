@@ -47,12 +47,22 @@ export const updateKeybinding = async (req, res, next) => {
     // Normalize class field if it exists
     if (req.body.class) {
       req.body.class = req.body.class.toLowerCase().replace(/\s+/g, '');
+
+      //if the class is not the same as the keybinding class, remove keybinds
+      if (req.body.class !== keybinding.class) {
+        req.body.keybinds = [];
+      }
     }
     if (req.body.spec) {
       req.body.spec = req.body.spec.toLowerCase();
 
       if (req.body.spec === 'beast mastery') {
         req.body.spec = 'beast-mastery';
+      }
+
+      //if the spec is not the same as the keybinding spec, remove keybinds
+      if (req.body.spec !== keybinding.spec) {
+        req.body.keybinds = [];
       }
     }
 
@@ -65,16 +75,23 @@ export const updateKeybinding = async (req, res, next) => {
         req.body.hero_talent = req.body.hero_talent.replace(/\s+/g, '-');
       }
 
+      //if the hero_talent is not the same as the keybinding hero_talent, remove keybinds
+      if (req.body.hero_talent !== keybinding.hero_talent) {
+        req.body.keybinds = [];
+      }
+
     }
 
-    req.body.keybinds = req.body.keybinds.map(keybind => {
-      if (keybind.spell.spellId) {
-        keybind.spell.spell_id = keybind.spell.spellId.toString();
-        delete keybind.spell.spellId;
-      }
-      return keybind;
-    })
-
+    if (req.body.keybinds) {
+      req.body.keybinds = req.body.keybinds.map(keybind => {
+        if (keybind.spell.spellId) {
+          keybind.spell.spell_id = keybind.spell.spellId.toString();
+          delete keybind.spell.spellId;
+        }
+        return keybind;
+      })
+    }
+    console.log('after req.body', req.body);
     const updatedKeybinding = await Keybinding.findOneAndUpdate(
       { _id: keybinding_id },
       req.body,
