@@ -13,6 +13,7 @@ router.post('/',
   KeybindingsController.createKeybinding)
 router.put('/:keybinding_id',
   validateUpdateKeybinding,
+  AuthnMiddleware.decode,
   KeybindingsController.updateKeybinding)
 router.use(AuthnMiddleware.authenticateToken)
 router.get('/',
