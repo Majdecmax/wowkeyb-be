@@ -34,21 +34,24 @@ export const getKeybindings = async (req, res, next) => {
 export const updateKeybinding = async (req, res, next) => {
   try {
     const { keybinding_id } = req.params;
-    const { user_id } = req.decoded;
-
     const keybinding = await Keybinding.findById(keybinding_id);
-
-    // Convert ObjectId to string for comparison
-    const keybindingUserId = keybinding.user_id.toString();
-
-    // Now compare the strings
-    if (keybindingUserId !== user_id) {
-      Logger.error('User is not authorized to update this keybinding');
-      return res.status(403).json({ message: 'Not authorized to modify this keybinding' });
-    }
 
     if (!keybinding) {
       return res.status(404).send({ message: 'Keybinding not found' });
+    }
+
+    // If keybinding has a user_id, verify ownership
+    if (keybinding.user_id) {
+      const { decoded } = req;
+      if (!decoded || !decoded.user_id) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      const keybindingUserId = keybinding.user_id.toString();
+      if (keybindingUserId !== decoded.user_id) {
+        Logger.error('User is not authorized to update this keybinding');
+        return res.status(403).json({ message: 'Not authorized to modify this keybinding' });
+      }
     }
 
     req.body.hero_talent = req.body.heroTalent;

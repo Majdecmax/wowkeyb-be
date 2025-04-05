@@ -37,19 +37,23 @@ const AuthnMiddleware = {
 
     // if token is present, decode it
     if (token) {
-
       if (token.startsWith('Bearer ')) {
         // Remove Bearer from string
         token = token.slice(7, token.length);
       }
 
-      const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
-      const { user_id } = decoded;
-      if (!user_id) {
+      try {
+        const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+        const { user_id } = decoded;
+        if (!user_id) {
+          return res.status(401).send({ code: "TOK003", message: 'Token is not valid' });
+        }
+
+        req.decoded = decoded;
+      } catch (err) {
+        Logger.error(err);
         return res.status(401).send({ code: "TOK003", message: 'Token is not valid' });
       }
-
-      req.decoded = decoded;
     }
 
     next();
