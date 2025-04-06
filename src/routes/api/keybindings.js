@@ -3,7 +3,7 @@ import { Router } from "express";
 import AuthnMiddleware from "../../middlewares/authn.js";
 
 import * as KeybindingsController from '../../controllers/keybindings/keybindings.js';
-import { validateGetKeybindings, validateUpdateKeybinding, validateCreateKeybinding } from '../../validators/keybindings.js'
+import { validateGetKeybindings, validateGetKeybinding, validateUpdateKeybinding, validateCreateKeybinding } from '../../validators/keybindings.js'
 
 const router = new Router();
 
@@ -19,7 +19,9 @@ router.use(AuthnMiddleware.authenticateToken)
 router.get('/',
   validateGetKeybindings,
   KeybindingsController.getKeybindings)
-
+router.get('/:keybinding_id',
+  validateGetKeybinding,
+  KeybindingsController.getKeybinding)
 router.delete('/:keybinding_id',
   KeybindingsController.deleteKeybinding)
 

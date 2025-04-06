@@ -8,7 +8,10 @@
     "dev": "node --env-file .env.development src/app",
     "staging": "node --env-file .env.staging src/app",
     "production": "node --env-file .env.production src/app",
-    "start": "node src/app"
+    "start": "node src/app",
+    "update-is-public:dev": "node --env-file .env.development src/scripts/updateIsPublic.js",
+    "update-is-public:staging": "node --env-file .env.staging src/scripts/updateIsPublic.js",
+    "update-is-public:prod": "node --env-file .env.production src/scripts/updateIsPublic.js"
   },
   "author": "Logan Born",
   "license": "MIT",

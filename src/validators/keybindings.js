@@ -1,5 +1,8 @@
-import { body, query } from 'express-validator';
+import { body, query, param } from 'express-validator';
 
+export const validateGetKeybinding = [
+  param('keybinding_id').isString().notEmpty(),
+];
 
 // Validate GET /api/keybindings
 export const validateGetKeybindings = [

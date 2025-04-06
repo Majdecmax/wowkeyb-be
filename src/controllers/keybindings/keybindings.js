@@ -54,6 +54,11 @@ export const updateKeybinding = async (req, res, next) => {
       }
     }
 
+    if ('isPublic' in req.body) {
+      req.body.is_public = req.body.isPublic;
+      delete req.body.isPublic;
+    }
+
     req.body.hero_talent = req.body.heroTalent;
     delete req.body.heroTalent;
 
@@ -136,6 +141,7 @@ export const createKeybinding = async (req, res, next) => {
       class: randomClass.class,
       spec: randomClass.spec,
       hero_talent: randomClass.heroTalent,
+      is_public: req.decoded?.user_id ? false : true,
       user_id: req.decoded?.user_id || null
     }
 
@@ -160,6 +166,31 @@ export const deleteKeybinding = async (req, res, next) => {
     await Keybinding.findByIdAndDelete(keybinding_id);
 
     return res.status(200).send({ message: 'Keybinding deleted' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Get a single keybinding
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export const getKeybinding = async (req, res, next) => {
+  try {
+    const { keybinding_id } = req.params;
+    const keybinding = await Keybinding.findById(keybinding_id);
+
+    if (!keybinding) {
+      return res.status(404).send({ message: 'Keybinding not found' });
+    }
+
+    if (!keybinding.is_public && keybinding.user_id !== req.decoded.user_id) {
+      return res.status(403).send({ message: 'Not authorized to access this keybinding' });
+    }
+
+    return res.status(200).send(presentOne(keybinding));
   } catch (error) {
     next(error);
   }

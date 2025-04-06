@@ -121,7 +121,11 @@ const keybindingSchema = new Schema({
   keybinds: [{
     type: keybindSchema,
     default: []
-  }]
+  }],
+  is_public: {
+    type: Boolean,
+    default: true
+  }
 }, {
   timestamps: true
 });
