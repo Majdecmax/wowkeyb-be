@@ -1,4 +1,6 @@
-import appConfig from '../../package.json' assert { type: 'json' }
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const appConfig = require('../../package.json');
 
 const Config = {
 
