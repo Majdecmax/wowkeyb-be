@@ -132,15 +132,23 @@ export const createKeybinding = async (req, res, next) => {
   try {
     Logger.info('Creating Keybinding');
 
-    console.log('req.decoded', req.decoded);
-
     const randomClass = generateRandomClassDetails();
-    console.log('randomClass', randomClass);
+
+    if (req.body?.spec === 'beast mastery') {
+      req.body.spec = 'beast-mastery';
+    }
+
+    const classDetails = (req.body?.class && req.body?.spec && req.body?.heroTalent) ? {
+      class: req.body.class.toLowerCase().replace(/\s+/g, ''),
+      spec: req.body.spec.toLowerCase(),
+      heroTalent: req.body.heroTalent.toLowerCase().replace(/\s+/g, '-')
+    } : randomClass;
+
     const newKeybinding = {
-      name: 'New Keybinding',
-      class: randomClass.class,
-      spec: randomClass.spec,
-      hero_talent: randomClass.heroTalent,
+      name: req.body?.name || 'New Keybinding',
+      class: classDetails.class,
+      spec: classDetails.spec,
+      hero_talent: classDetails.heroTalent,
       is_public: req.decoded?.user_id ? false : true,
       user_id: req.decoded?.user_id || null
     }
@@ -163,6 +171,12 @@ export const deleteKeybinding = async (req, res, next) => {
   try {
     const { keybinding_id } = req.params;
 
+    // Check if the ID is a valid MongoDB ObjectId
+    const isValidObjectId = /^[0-9a-fA-F]{24}$/.test(keybinding_id);
+    if (!isValidObjectId) {
+      return res.status(400).send({ message: 'Invalid keybinding ID format' });
+    }
+
     await Keybinding.findByIdAndDelete(keybinding_id);
 
     return res.status(200).send({ message: 'Keybinding deleted' });
@@ -180,6 +194,13 @@ export const deleteKeybinding = async (req, res, next) => {
 export const getKeybinding = async (req, res, next) => {
   try {
     const { keybinding_id } = req.params;
+
+    // Check if the ID is a valid MongoDB ObjectId
+    const isValidObjectId = /^[0-9a-fA-F]{24}$/.test(keybinding_id);
+    if (!isValidObjectId) {
+      return res.status(400).send({ message: 'Invalid keybinding ID format' });
+    }
+
     const keybinding = await Keybinding.findById(keybinding_id);
 
     if (!keybinding) {

@@ -7,6 +7,14 @@ import { validateGetKeybindings, validateGetKeybinding, validateUpdateKeybinding
 
 const router = new Router();
 
+router.get('/',
+  validateGetKeybindings,
+  AuthnMiddleware.decode,
+  KeybindingsController.getKeybindings)
+router.get('/:keybinding_id',
+  validateGetKeybinding,
+  AuthnMiddleware.decode,
+  KeybindingsController.getKeybinding)
 router.post('/',
   validateCreateKeybinding,
   AuthnMiddleware.decode,
@@ -16,12 +24,6 @@ router.put('/:keybinding_id',
   AuthnMiddleware.decode,
   KeybindingsController.updateKeybinding)
 router.use(AuthnMiddleware.authenticateToken)
-router.get('/',
-  validateGetKeybindings,
-  KeybindingsController.getKeybindings)
-router.get('/:keybinding_id',
-  validateGetKeybinding,
-  KeybindingsController.getKeybinding)
 router.delete('/:keybinding_id',
   KeybindingsController.deleteKeybinding)
 
