@@ -18,12 +18,6 @@ router.get('/', (req, res) => {
               "link": "/keybinds"
             },
             {
-              "id": "keybinds.view",
-              "title": "View",
-              "type": "basic",
-              "link": "/keybinds/view"
-            },
-            {
               "id": "keybinds.my-keybindings",
               "title": "My Keybindings",
               "type": "basic",
@@ -55,12 +49,6 @@ router.get('/', (req, res) => {
               "title": "View All",
               "type": "basic",
               "link": "/keybinds"
-            },
-            {
-              "id": "keybinds.view",
-              "title": "View",
-              "type": "basic",
-              "link": "/keybinds/view"
             },
             {
               "id": "keybinds.my-keybindings",
