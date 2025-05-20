@@ -26,6 +26,52 @@ export const getKeybindings = async (req, res, next) => {
 };
 
 /**
+ * Get keybindings for the home page
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export const getHomeKeybindings = async (req, res, next) => {
+  try {
+    Logger.info('Getting Home Keybindings');
+
+    // Get all public keybindings
+    const keybindings = await Keybinding.find({ is_public: true });
+
+    // Group keybindings by class
+    const classGroups = keybindings.reduce((acc, keybinding) => {
+      const className = keybinding.class.charAt(0).toUpperCase() + keybinding.class.slice(1);
+      if (!acc[className]) {
+        acc[className] = {
+          recent: [],
+          popular: []
+        };
+      }
+      acc[className].recent.push(keybinding);
+      return acc;
+    }, {});
+
+    // Sort recent by creation date and limit to 5 per class
+    // Sort popular by duplication count and limit to 5 per class
+    const result = Object.entries(classGroups).reduce((acc, [className, data]) => {
+      acc[className] = {
+        recent: presentMany(data.recent
+          .sort((a, b) => b.createdAt - a.createdAt)
+          .slice(0, 5)),
+        popular: presentMany(data.recent
+          .sort((a, b) => (b.duplication_count || 0) - (a.duplication_count || 0))
+          .slice(0, 5))
+      };
+      return acc;
+    }, {});
+
+    res.status(200).send(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Save/update an existing keybinding
  * @param {import('express').Request} req
  * @param {import('express').Response} res
@@ -138,6 +184,11 @@ export const createKeybinding = async (req, res, next) => {
       req.body.spec = 'beast-mastery';
     }
 
+    // If duplicating an existing keybinding
+    if (req.body.duplicate_from) {
+      await incrementDuplicationCount(req.body.duplicate_from);
+    }
+
     const classDetails = (req.body?.class && req.body?.spec && req.body?.heroTalent) ? {
       class: req.body.class.toLowerCase().replace(/\s+/g, ''),
       spec: req.body.spec.toLowerCase(),
@@ -214,5 +265,20 @@ export const getKeybinding = async (req, res, next) => {
     return res.status(200).send(presentOne(keybinding));
   } catch (error) {
     next(error);
+  }
+};
+
+/**
+ * Increment the duplication count for a keybinding
+ * @param {string} keybindingId - The ID of the keybinding to increment
+ */
+export const incrementDuplicationCount = async (keybindingId) => {
+  try {
+    await Keybinding.findByIdAndUpdate(
+      keybindingId,
+      { $inc: { duplication_count: 1 } }
+    );
+  } catch (error) {
+    Logger.error('Error incrementing duplication count:', error);
   }
 };
