@@ -23,21 +23,22 @@ const toTitleCase = (str) => {
 }
 
 const mapToData = (keybinding) => ({
-  keybinding_id: keybinding._id,
-  name: toTitleCase(keybinding.name),
-  user_id: keybinding.user_id || null,
+  keybindingId: keybinding._id || null,
+  name: toTitleCase(keybinding.name) || null,
+  userId: keybinding.user_id || null,
   class: toTitleCase(keybinding.class) || null,
   spec: toTitleCase(keybinding.spec) || null,
   heroTalent: toTitleCase(keybinding.hero_talent) || null,
-  is_public: keybinding.is_public || false,
+  isPublic: keybinding.is_public || false,
+  createdAt: keybinding.createdAt || null,
   keybinds: (keybinding.keybinds || []).map(keybind => ({
-    key: keybind.key,
+    key: keybind.key || null,
     spell: {
-      key: keybind.spell.key,
-      description: keybind.spell.description,
-      icon: keybind.spell.icon,
-      name: keybind.spell.name,
-      spellId: keybind.spell.spell_id
+      key: keybind.spell.key || null,
+      description: keybind.spell.description || null,
+      icon: keybind.spell.icon || null,
+      name: keybind.spell.name || null,
+      spellId: keybind.spell.spell_id || null
     }
   }))
 })

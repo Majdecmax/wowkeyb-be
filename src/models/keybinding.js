@@ -125,6 +125,10 @@ const keybindingSchema = new Schema({
   is_public: {
     type: Boolean,
     default: true
+  },
+  duplication_count: {
+    type: Number,
+    default: 0
   }
 }, {
   timestamps: true

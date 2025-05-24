@@ -7,6 +7,9 @@ import { validateGetKeybindings, validateGetKeybinding, validateUpdateKeybinding
 
 const router = new Router();
 
+router.get('/home',
+  KeybindingsController.getHomeKeybindings)
+
 router.get('/',
   validateGetKeybindings,
   AuthnMiddleware.decode,
