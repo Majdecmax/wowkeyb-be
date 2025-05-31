@@ -22,12 +22,18 @@ router.post('/',
   validateCreateKeybinding,
   AuthnMiddleware.decode,
   KeybindingsController.createKeybinding)
+router.post('/:keybinding_id/duplicate',
+  validateGetKeybinding,
+  AuthnMiddleware.decode,
+  KeybindingsController.duplicateKeybinding)
 router.put('/:keybinding_id',
   validateUpdateKeybinding,
   AuthnMiddleware.decode,
   KeybindingsController.updateKeybinding)
 router.use(AuthnMiddleware.authenticateToken)
 router.delete('/:keybinding_id',
+  validateGetKeybinding,
+  AuthnMiddleware.decode,
   KeybindingsController.deleteKeybinding)
 
 export default router;
