@@ -195,19 +195,62 @@ export const createKeybinding = async (req, res, next) => {
       heroTalent: req.body.heroTalent.toLowerCase().replace(/\s+/g, '-')
     } : randomClass;
 
+    // Process keybinds if they exist
+    let processedKeybinds = [];
+    if (req.body?.keybinds && Array.isArray(req.body.keybinds)) {
+      console.log('Processing keybinds:', req.body.keybinds);
+      processedKeybinds = req.body.keybinds.map(keybind => {
+        // Ensure all required fields are present
+        if (!keybind.spell) {
+          console.error('Missing spell object in keybind:', keybind);
+          return null;
+        }
+
+        const processedKeybind = {
+          key: keybind.key || null,
+          spell: {
+            key: keybind.spell.key || null,
+            description: keybind.spell.description || null,
+            icon: keybind.spell.icon || null,
+            name: keybind.spell.name || null,
+            spell_id: keybind.spell.spellId?.toString() || keybind.spell.spell_id || null
+          }
+        };
+
+        // Validate required fields
+        if (!processedKeybind.spell.key) {
+          console.error('Missing required spell.key in keybind:', keybind);
+          return null;
+        }
+
+        return processedKeybind;
+      }).filter(keybind => keybind !== null); // Remove any invalid keybinds
+
+      console.log('Processed keybinds:', processedKeybinds);
+    }
+
     const newKeybinding = {
       name: req.body?.name || 'New Keybinding',
       class: classDetails.class,
       spec: classDetails.spec,
       hero_talent: classDetails.heroTalent,
       is_public: req.decoded?.user_id ? false : true,
-      user_id: req.decoded?.user_id || null
+      user_id: req.decoded?.user_id || null,
+      keybinds: processedKeybinds
     }
 
+    console.log('Creating new keybinding with data:', newKeybinding);
     const createdKeybinding = await Keybinding.create(newKeybinding);
 
     return res.status(200).send(presentOne(createdKeybinding));
   } catch (error) {
+    console.error('Error creating keybinding:', error);
+    if (error.name === 'ValidationError') {
+      return res.status(400).send({
+        message: 'Validation error',
+        details: Object.values(error.errors).map(err => err.message)
+      });
+    }
     next(error);
   }
 };
@@ -228,9 +271,27 @@ export const deleteKeybinding = async (req, res, next) => {
       return res.status(400).send({ message: 'Invalid keybinding ID format' });
     }
 
+    // Find the keybinding first to verify ownership
+    const keybinding = await Keybinding.findById(keybinding_id);
+    if (!keybinding) {
+      return res.status(404).send({ message: 'Keybinding not found' });
+    }
+
+    // Verify ownership
+    if (keybinding.user_id?.toString() !== req.decoded.user_id) {
+      return res.status(403).send({ message: 'Not authorized to delete this keybinding' });
+    }
+
+    // Get the keybinding data before deleting
+    const keybindingData = presentOne(keybinding);
+
     await Keybinding.findByIdAndDelete(keybinding_id);
 
-    return res.status(200).send({ message: 'Keybinding deleted' });
+    return res.status(200).send({
+      message: 'Keybinding deleted',
+      keybindingId: keybinding_id,
+      deletedKeybinding: keybindingData // Include the full keybinding data
+    });
   } catch (error) {
     next(error);
   }
@@ -258,9 +319,30 @@ export const getKeybinding = async (req, res, next) => {
       return res.status(404).send({ message: 'Keybinding not found' });
     }
 
-    if (!keybinding.is_public && keybinding.user_id !== req.decoded.user_id) {
-      return res.status(403).send({ message: 'Not authorized to access this keybinding' });
+    console.log('Authorization check:', {
+      keybindingId: keybinding._id,
+      isPublic: keybinding.is_public,
+      keybindingUserId: keybinding.user_id?.toString(),
+      requestingUserId: req.decoded?.user_id,
+      types: {
+        keybindingUserIdType: typeof keybinding.user_id,
+        requestingUserIdType: typeof req.decoded?.user_id
+      }
+    });
+
+    // If the keybinding is private, require authentication
+    if (!keybinding.is_public) {
+      if (!req.decoded?.user_id) {
+        return res.status(401).send({ message: 'Authentication required' });
+      }
+
+      if (keybinding.user_id?.toString() !== req.decoded.user_id) {
+        console.log('Access denied - keybinding is private and user is not the owner');
+        return res.status(403).send({ message: 'Not authorized to access this keybinding' });
+      }
     }
+
+    console.log('Access granted to keybinding');
 
     return res.status(200).send(presentOne(keybinding));
   } catch (error) {
@@ -280,5 +362,107 @@ export const incrementDuplicationCount = async (keybindingId) => {
     );
   } catch (error) {
     Logger.error('Error incrementing duplication count:', error);
+  }
+};
+
+/**
+ * Duplicate an existing keybinding
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export const duplicateKeybinding = async (req, res, next) => {
+  try {
+    const { keybinding_id } = req.params;
+    Logger.info(`Duplicating keybinding: ${keybinding_id}`);
+
+    // Find the original keybinding
+    const originalKeybinding = await Keybinding.findById(keybinding_id);
+    if (!originalKeybinding) {
+      return res.status(404).send({ message: 'Keybinding not found' });
+    }
+
+    // Convert mongoose document to plain object
+    const originalData = originalKeybinding.toObject();
+
+    // Find existing copies of this keybinding
+    const baseName = originalData.name;
+    const copyRegex = new RegExp(`^${baseName} \\(Copy(?: \\d+)?\\)$`);
+    const existingCopies = await Keybinding.find({
+      name: copyRegex,
+      user_id: req.decoded?.user_id
+    });
+
+    // Determine the next copy number
+    let copyNumber = 1;
+    if (existingCopies.length > 0) {
+      const numbers = existingCopies.map(copy => {
+        const match = copy.name.match(/\(Copy (\d+)\)$/);
+        return match ? parseInt(match[1]) : 1;
+      });
+      copyNumber = Math.max(...numbers) + 1;
+    }
+
+    // Create the new name
+    const newName = copyNumber === 1
+      ? `${baseName} (Copy)`
+      : `${baseName} (Copy ${copyNumber})`;
+
+    console.log('Original keybinding:', {
+      id: originalData._id,
+      name: originalData.name,
+      keybindsCount: originalData.keybinds?.length,
+      keybinds: JSON.stringify(originalData.keybinds, null, 2)
+    });
+
+    // Create a deep copy of the keybinding
+    const duplicatedKeybinding = {
+      name: newName,
+      class: originalData.class,
+      spec: originalData.spec,
+      hero_talent: originalData.hero_talent,
+      is_public: false, // Always set to private when duplicating
+      user_id: req.decoded?.user_id || null,
+      keybinds: originalData.keybinds?.map(keybind => {
+        console.log('Processing keybind:', JSON.stringify(keybind, null, 2));
+
+        // Create a complete copy of the keybind
+        const newKeybind = {
+          key: keybind.key,
+          spell: {
+            key: keybind.key, // Use the keybind's key as the spell key
+            description: keybind.spell.description,
+            icon: keybind.spell.icon,
+            name: keybind.spell.name,
+            spell_id: keybind.spell.spell_id
+          }
+        };
+
+        console.log('Created new keybind:', JSON.stringify(newKeybind, null, 2));
+        return newKeybind;
+      }) || []
+    };
+
+    console.log('Creating duplicated keybinding:', {
+      name: duplicatedKeybinding.name,
+      keybindsCount: duplicatedKeybinding.keybinds?.length,
+      keybinds: JSON.stringify(duplicatedKeybinding.keybinds, null, 2)
+    });
+
+    const createdKeybinding = await Keybinding.create(duplicatedKeybinding);
+
+    // Increment the duplication count of the original keybinding
+    await incrementDuplicationCount(keybinding_id);
+
+    return res.status(200).send(presentOne(createdKeybinding));
+  } catch (error) {
+    console.error('Error duplicating keybinding:', error);
+    if (error.name === 'ValidationError') {
+      return res.status(400).send({
+        message: 'Validation error',
+        details: Object.values(error.errors).map(err => err.message)
+      });
+    }
+    next(error);
   }
 };
