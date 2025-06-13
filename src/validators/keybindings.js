@@ -1,7 +1,16 @@
 import { body, query, param } from 'express-validator';
+import mongoose from 'mongoose';
 
 export const validateGetKeybinding = [
-  param('keybinding_id').isString().notEmpty(),
+  param('keybinding_id')
+    .isString()
+    .notEmpty()
+    .custom((value) => {
+      if (!mongoose.Types.ObjectId.isValid(value)) {
+        throw new Error('Invalid keybinding ID format');
+      }
+      return true;
+    }),
 ];
 
 // Validate GET /api/keybindings
