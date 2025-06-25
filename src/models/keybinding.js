@@ -129,6 +129,10 @@ const keybindingSchema = new Schema({
   duplication_count: {
     type: Number,
     default: 0
+  },
+  deleted_at: {
+    type: Date,
+    default: null
   }
 }, {
   timestamps: true
@@ -147,6 +151,15 @@ keybindingSchema.path('hero_talent').validate(function (value) {
   const classHeroTalents = HERO_TALENTS_ENUM[this.class];
   return classHeroTalents && classHeroTalents.includes(value);
 }, 'Invalid hero talent for the selected class');
+
+// Add a pre-find middleware to exclude soft-deleted documents
+keybindingSchema.pre(/^find/, function (next) {
+  // Only apply this filter if we're not explicitly looking for deleted documents
+  if (!this.getQuery().includeDeleted) {
+    this.where({ deleted_at: null });
+  }
+  next();
+});
 
 const Keybinding = mongoose.model('Keybinding', keybindingSchema);
 export default Keybinding;

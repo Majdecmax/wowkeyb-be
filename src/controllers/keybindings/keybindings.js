@@ -80,6 +80,8 @@ export const getHomeKeybindings = async (req, res, next) => {
 export const updateKeybinding = async (req, res, next) => {
   try {
     const { keybinding_id } = req.params;
+
+    // Find the keybinding (automatically excludes soft-deleted ones due to middleware)
     const keybinding = await Keybinding.findById(keybinding_id);
 
     if (!keybinding) {
@@ -256,7 +258,7 @@ export const createKeybinding = async (req, res, next) => {
 };
 
 /**
- * Delete a keybinding
+ * Delete a keybinding (soft delete)
  * @param {import('express').Request} req
  * @param {import('express').Response} res
  * @param {import('express').NextFunction} next
@@ -271,10 +273,15 @@ export const deleteKeybinding = async (req, res, next) => {
       return res.status(400).send({ message: 'Invalid keybinding ID format' });
     }
 
-    // Find the keybinding first to verify ownership
-    const keybinding = await Keybinding.findById(keybinding_id);
+    // Find the keybinding first to verify ownership (including soft-deleted ones)
+    const keybinding = await Keybinding.findOne({ _id: keybinding_id }).setOptions({ includeDeleted: true });
     if (!keybinding) {
       return res.status(404).send({ message: 'Keybinding not found' });
+    }
+
+    // Check if already soft-deleted
+    if (keybinding.deleted_at) {
+      return res.status(400).send({ message: 'Keybinding is already deleted' });
     }
 
     // Verify ownership
@@ -282,15 +289,108 @@ export const deleteKeybinding = async (req, res, next) => {
       return res.status(403).send({ message: 'Not authorized to delete this keybinding' });
     }
 
-    // Get the keybinding data before deleting
+    // Get the keybinding data before soft-deleting
     const keybindingData = presentOne(keybinding);
 
-    await Keybinding.findByIdAndDelete(keybinding_id);
+    // Soft delete by setting deleted_at timestamp
+    await Keybinding.findByIdAndUpdate(keybinding_id, { deleted_at: new Date() });
 
     return res.status(200).send({
       message: 'Keybinding deleted',
       keybindingId: keybinding_id,
       deletedKeybinding: keybindingData // Include the full keybinding data
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Restore a soft-deleted keybinding
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export const restoreKeybinding = async (req, res, next) => {
+  try {
+    const { keybinding_id } = req.params;
+
+    // Check if the ID is a valid MongoDB ObjectId
+    const isValidObjectId = /^[0-9a-fA-F]{24}$/.test(keybinding_id);
+    if (!isValidObjectId) {
+      return res.status(400).send({ message: 'Invalid keybinding ID format' });
+    }
+
+    // Find the keybinding including soft-deleted ones
+    const keybinding = await Keybinding.findOne({ _id: keybinding_id }).setOptions({ includeDeleted: true });
+    if (!keybinding) {
+      return res.status(404).send({ message: 'Keybinding not found' });
+    }
+
+    // Check if not soft-deleted
+    if (!keybinding.deleted_at) {
+      return res.status(400).send({ message: 'Keybinding is not deleted' });
+    }
+
+    // Verify ownership
+    if (keybinding.user_id?.toString() !== req.decoded.user_id) {
+      return res.status(403).send({ message: 'Not authorized to restore this keybinding' });
+    }
+
+    // Restore by removing deleted_at timestamp
+    const restoredKeybinding = await Keybinding.findByIdAndUpdate(
+      keybinding_id,
+      { deleted_at: null },
+      { new: true }
+    );
+
+    return res.status(200).send({
+      message: 'Keybinding restored',
+      keybindingId: keybinding_id,
+      restoredKeybinding: presentOne(restoredKeybinding)
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Permanently delete a keybinding (hard delete)
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export const permanentlyDeleteKeybinding = async (req, res, next) => {
+  try {
+    const { keybinding_id } = req.params;
+
+    // Check if the ID is a valid MongoDB ObjectId
+    const isValidObjectId = /^[0-9a-fA-F]{24}$/.test(keybinding_id);
+    if (!isValidObjectId) {
+      return res.status(400).send({ message: 'Invalid keybinding ID format' });
+    }
+
+    // Find the keybinding including soft-deleted ones
+    const keybinding = await Keybinding.findOne({ _id: keybinding_id }).setOptions({ includeDeleted: true });
+    if (!keybinding) {
+      return res.status(404).send({ message: 'Keybinding not found' });
+    }
+
+    // Verify ownership
+    if (keybinding.user_id?.toString() !== req.decoded.user_id) {
+      return res.status(403).send({ message: 'Not authorized to permanently delete this keybinding' });
+    }
+
+    // Get the keybinding data before permanently deleting
+    const keybindingData = presentOne(keybinding);
+
+    // Permanently delete the keybinding
+    await Keybinding.findByIdAndDelete(keybinding_id);
+
+    return res.status(200).send({
+      message: 'Keybinding permanently deleted',
+      keybindingId: keybinding_id,
+      deletedKeybinding: keybindingData
     });
   } catch (error) {
     next(error);
@@ -313,6 +413,7 @@ export const getKeybinding = async (req, res, next) => {
       return res.status(400).send({ message: 'Invalid keybinding ID format' });
     }
 
+    // Find the keybinding (automatically excludes soft-deleted ones due to middleware)
     const keybinding = await Keybinding.findById(keybinding_id);
 
     if (!keybinding) {
@@ -376,7 +477,7 @@ export const duplicateKeybinding = async (req, res, next) => {
     const { keybinding_id } = req.params;
     Logger.info(`Duplicating keybinding: ${keybinding_id}`);
 
-    // Find the original keybinding
+    // Find the original keybinding (automatically excludes soft-deleted ones due to middleware)
     const originalKeybinding = await Keybinding.findById(keybinding_id);
     if (!originalKeybinding) {
       return res.status(404).send({ message: 'Keybinding not found' });
@@ -385,7 +486,7 @@ export const duplicateKeybinding = async (req, res, next) => {
     // Convert mongoose document to plain object
     const originalData = originalKeybinding.toObject();
 
-    // Find existing copies of this keybinding
+    // Find existing copies of this keybinding (automatically excludes soft-deleted ones)
     const baseName = originalData.name;
     const copyRegex = new RegExp(`^${baseName} \\(Copy(?: \\d+)?\\)$`);
     const existingCopies = await Keybinding.find({
@@ -463,6 +564,30 @@ export const duplicateKeybinding = async (req, res, next) => {
         details: Object.values(error.errors).map(err => err.message)
       });
     }
+    next(error);
+  }
+};
+
+/**
+ * Get soft-deleted keybindings for the user
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export const getDeletedKeybindings = async (req, res, next) => {
+  try {
+    Logger.info('Getting Deleted Keybindings');
+
+    const { user_id } = req.decoded;
+
+    // Find soft-deleted keybindings for the user
+    const deletedKeybindings = await Keybinding.find({
+      user_id,
+      deleted_at: { $ne: null }
+    }).setOptions({ includeDeleted: true });
+
+    res.status(200).send(presentMany(deletedKeybindings));
+  } catch (error) {
     next(error);
   }
 };
