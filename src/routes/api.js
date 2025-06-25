@@ -1,4 +1,3 @@
-
 import { Router } from "express";
 
 import AuthRouter from './api/auth.js'
@@ -9,6 +8,7 @@ import AbilityRouter from './api/ability.js'
 
 import UserRouter from './api/user.js'
 import KeybindingsRouter from './api/keybindings.js'
+import VersionsRouter from './api/versions.js'
 
 import AuthnMiddleware from '../middlewares/authn.js';
 
@@ -27,5 +27,8 @@ router
 
   //keybindings
   .use('/keybindings', KeybindingsRouter)
+
+  //versions
+  .use('/versions', VersionsRouter)
 
 export default router;

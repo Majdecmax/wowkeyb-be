@@ -17,7 +17,16 @@
     "update-is-public:prod": "node --env-file .env.production src/scripts/updateIsPublic.js",
     "migrate-soft-delete:dev": "node --env-file .env.development src/scripts/migrateSoftDelete.js",
     "migrate-soft-delete:staging": "node --env-file .env.staging src/scripts/migrateSoftDelete.js",
-    "migrate-soft-delete:prod": "node --env-file .env.production src/scripts/migrateSoftDelete.js"
+    "migrate-soft-delete:prod": "node --env-file .env.production src/scripts/migrateSoftDelete.js",
+    "seed-versions:dev": "node --env-file .env.development src/scripts/seedVersions.js",
+    "seed-versions:staging": "node --env-file .env.staging src/scripts/seedVersions.js",
+    "seed-versions:prod": "node --env-file .env.production src/scripts/seedVersions.js",
+    "migrate-keybindings-versions:dev": "node --env-file .env.development src/scripts/migrateKeybindingsToVersions.js",
+    "migrate-keybindings-versions:staging": "node --env-file .env.staging src/scripts/migrateKeybindingsToVersions.js",
+    "migrate-keybindings-versions:prod": "node --env-file .env.production src/scripts/migrateKeybindingsToVersions.js",
+    "create-version-117:dev": "node --env-file .env.development src/scripts/createVersion117.js",
+    "create-version-117:staging": "node --env-file .env.staging src/scripts/createVersion117.js",
+    "create-version-117:prod": "node --env-file .env.production src/scripts/createVersion117.js"
   },
   "author": "Logan Born",
   "license": "MIT",
