@@ -1,6 +1,6 @@
 {
   "name": "wowkeyb-be",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "description": "Wowkeyb backend",
   "type": "module",
   "main": "app.js",
@@ -14,7 +14,10 @@
     "start": "node src/app",
     "update-is-public:dev": "node --env-file .env.development src/scripts/updateIsPublic.js",
     "update-is-public:staging": "node --env-file .env.staging src/scripts/updateIsPublic.js",
-    "update-is-public:prod": "node --env-file .env.production src/scripts/updateIsPublic.js"
+    "update-is-public:prod": "node --env-file .env.production src/scripts/updateIsPublic.js",
+    "migrate-soft-delete:dev": "node --env-file .env.development src/scripts/migrateSoftDelete.js",
+    "migrate-soft-delete:staging": "node --env-file .env.staging src/scripts/migrateSoftDelete.js",
+    "migrate-soft-delete:prod": "node --env-file .env.production src/scripts/migrateSoftDelete.js"
   },
   "author": "Logan Born",
   "license": "MIT",

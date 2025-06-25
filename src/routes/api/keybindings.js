@@ -14,6 +14,10 @@ router.get('/',
   validateGetKeybindings,
   AuthnMiddleware.decode,
   KeybindingsController.getKeybindings)
+router.get('/deleted',
+  validateGetKeybindings,
+  AuthnMiddleware.decode,
+  KeybindingsController.getDeletedKeybindings)
 router.get('/:keybinding_id',
   validateGetKeybinding,
   AuthnMiddleware.decode,
@@ -35,5 +39,13 @@ router.delete('/:keybinding_id',
   validateGetKeybinding,
   AuthnMiddleware.decode,
   KeybindingsController.deleteKeybinding)
+router.post('/:keybinding_id/restore',
+  validateGetKeybinding,
+  AuthnMiddleware.decode,
+  KeybindingsController.restoreKeybinding)
+router.delete('/:keybinding_id/permanent',
+  validateGetKeybinding,
+  AuthnMiddleware.decode,
+  KeybindingsController.permanentlyDeleteKeybinding)
 
 export default router;
