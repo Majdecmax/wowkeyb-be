@@ -65,3 +65,89 @@ The `Keybinding` model now includes:
 - Only the owner of a keybinding can delete, restore, or permanently delete it
 - Soft-deleted keybindings are not included in public listings or search results
 - The `duplicateKeybinding` function only works with non-deleted keybindings
+
+## Version Management
+
+The system now supports game version management for keybindings. Each keybinding is associated with a specific game version.
+
+### Version Migration
+
+#### Migrate All User Keybindings to Latest Version
+```
+POST /api/keybindings/migrate-to-latest
+```
+Migrates all keybindings for the authenticated user to the latest available version.
+
+**Response:**
+```json
+{
+  "message": "Keybindings migrated successfully",
+  "latestVersion": "11.1.7",
+  "migratedCount": 5
+}
+```
+
+#### Migrate Specific Keybinding to Specific Version
+```
+POST /api/keybindings/:keybinding_id/migrate
+Body: { "version_id": "version_object_id" }
+```
+Migrates a specific keybinding to a specified version.
+
+**Response:**
+```json
+{
+  "message": "Keybinding migrated successfully",
+  "keybinding": { /* keybinding data */ },
+  "targetVersion": "11.1.7"
+}
+```
+
+### Creating New Versions
+
+To create a new game version (e.g., 11.1.7):
+
+```bash
+# Development
+npm run create-version-117:dev
+
+# Staging
+npm run create-version-117:staging
+
+# Production
+npm run create-version-117:prod
+```
+
+### Version API Endpoints
+
+#### Get All Versions
+```
+GET /api/versions
+```
+
+#### Get Latest Version
+```
+GET /api/versions/latest
+```
+
+#### Get Specific Version
+```
+GET /api/versions/:version_id
+```
+
+#### Create New Version (Admin)
+```
+POST /api/versions
+Body: { "game_version": "11.1.7" }
+```
+
+#### Update Version (Admin)
+```
+PUT /api/versions/:version_id
+Body: { "game_version": "11.1.8" }
+```
+
+#### Delete Version (Admin)
+```
+DELETE /api/versions/:version_id
+```

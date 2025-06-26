@@ -1,4 +1,5 @@
 import Keybinding from '../../models/keybinding.js';
+import Version from '../../models/version.js';
 import { presentOne, presentMany } from '../../presenters/keybindings.js';
 import Logger from '../../utils/logger.js';
 import { generateRandomClassDetails } from '../ability/abilities.js';
@@ -17,7 +18,7 @@ export const getKeybindings = async (req, res, next) => {
 
     const { user_id } = req.decoded;
 
-    const keybindings = await Keybinding.find({ user_id });
+    const keybindings = await Keybinding.find({ user_id }).populate('version');
 
     res.status(200).send(presentMany(keybindings));
   } catch (error) {
@@ -36,7 +37,7 @@ export const getHomeKeybindings = async (req, res, next) => {
     Logger.info('Getting Home Keybindings');
 
     // Get all public keybindings
-    const keybindings = await Keybinding.find({ is_public: true });
+    const keybindings = await Keybinding.find({ is_public: true }).populate('version');
 
     // Group keybindings by class
     const classGroups = keybindings.reduce((acc, keybinding) => {
@@ -82,7 +83,7 @@ export const updateKeybinding = async (req, res, next) => {
     const { keybinding_id } = req.params;
 
     // Find the keybinding (automatically excludes soft-deleted ones due to middleware)
-    const keybinding = await Keybinding.findById(keybinding_id);
+    const keybinding = await Keybinding.findById(keybinding_id).populate('version');
 
     if (!keybinding) {
       return res.status(404).send({ message: 'Keybinding not found' });
@@ -157,12 +158,22 @@ export const updateKeybinding = async (req, res, next) => {
         return keybind;
       })
     }
+
+    // Handle version update
+    if (req.body.version) {
+      // Check if the version exists
+      const version = await Version.findById(req.body.version);
+      if (!version) {
+        return res.status(400).send({ message: 'Invalid version ID' });
+      }
+    }
+
     console.log('after req.body', req.body);
     const updatedKeybinding = await Keybinding.findOneAndUpdate(
       { _id: keybinding_id },
       req.body,
       { new: true }
-    );
+    ).populate('version');
 
     return res.status(200).send(presentOne(updatedKeybinding));
   } catch (error) {
@@ -184,6 +195,24 @@ export const createKeybinding = async (req, res, next) => {
 
     if (req.body?.spec === 'beast mastery') {
       req.body.spec = 'beast-mastery';
+    }
+
+    // Validate version if provided
+    let versionId = null;
+    if (req.body?.version) {
+      // Check if the version exists
+      const version = await Version.findById(req.body.version);
+      if (!version) {
+        return res.status(400).send({ message: 'Invalid version ID' });
+      }
+      versionId = req.body.version;
+    } else {
+      // Get the latest version if none provided
+      const latestVersion = await Version.findOne().sort({ createdAt: -1 });
+      if (!latestVersion) {
+        return res.status(400).send({ message: 'No versions available. Please create a version first.' });
+      }
+      versionId = latestVersion._id;
     }
 
     // If duplicating an existing keybinding
@@ -236,6 +265,7 @@ export const createKeybinding = async (req, res, next) => {
       class: classDetails.class,
       spec: classDetails.spec,
       hero_talent: classDetails.heroTalent,
+      version: versionId,
       is_public: req.decoded?.user_id ? false : true,
       user_id: req.decoded?.user_id || null,
       keybinds: processedKeybinds
@@ -244,7 +274,10 @@ export const createKeybinding = async (req, res, next) => {
     console.log('Creating new keybinding with data:', newKeybinding);
     const createdKeybinding = await Keybinding.create(newKeybinding);
 
-    return res.status(200).send(presentOne(createdKeybinding));
+    // Populate version information for the response
+    const populatedKeybinding = await Keybinding.findById(createdKeybinding._id).populate('version');
+
+    return res.status(200).send(presentOne(populatedKeybinding));
   } catch (error) {
     console.error('Error creating keybinding:', error);
     if (error.name === 'ValidationError') {
@@ -274,7 +307,7 @@ export const deleteKeybinding = async (req, res, next) => {
     }
 
     // Find the keybinding first to verify ownership (including soft-deleted ones)
-    const keybinding = await Keybinding.findOne({ _id: keybinding_id }).setOptions({ includeDeleted: true });
+    const keybinding = await Keybinding.findOne({ _id: keybinding_id }).setOptions({ includeDeleted: true }).populate('version');
     if (!keybinding) {
       return res.status(404).send({ message: 'Keybinding not found' });
     }
@@ -342,7 +375,7 @@ export const restoreKeybinding = async (req, res, next) => {
       keybinding_id,
       { deleted_at: null },
       { new: true }
-    );
+    ).populate('version');
 
     return res.status(200).send({
       message: 'Keybinding restored',
@@ -371,7 +404,7 @@ export const permanentlyDeleteKeybinding = async (req, res, next) => {
     }
 
     // Find the keybinding including soft-deleted ones
-    const keybinding = await Keybinding.findOne({ _id: keybinding_id }).setOptions({ includeDeleted: true });
+    const keybinding = await Keybinding.findOne({ _id: keybinding_id }).setOptions({ includeDeleted: true }).populate('version');
     if (!keybinding) {
       return res.status(404).send({ message: 'Keybinding not found' });
     }
@@ -414,7 +447,7 @@ export const getKeybinding = async (req, res, next) => {
     }
 
     // Find the keybinding (automatically excludes soft-deleted ones due to middleware)
-    const keybinding = await Keybinding.findById(keybinding_id);
+    const keybinding = await Keybinding.findById(keybinding_id).populate('version');
 
     if (!keybinding) {
       return res.status(404).send({ message: 'Keybinding not found' });
@@ -522,7 +555,8 @@ export const duplicateKeybinding = async (req, res, next) => {
       class: originalData.class,
       spec: originalData.spec,
       hero_talent: originalData.hero_talent,
-      is_public: false, // Always set to private when duplicating
+      version: originalData.version,
+      is_public: false,
       user_id: req.decoded?.user_id || null,
       keybinds: originalData.keybinds?.map(keybind => {
         console.log('Processing keybind:', JSON.stringify(keybind, null, 2));
@@ -531,7 +565,7 @@ export const duplicateKeybinding = async (req, res, next) => {
         const newKeybind = {
           key: keybind.key,
           spell: {
-            key: keybind.key, // Use the keybind's key as the spell key
+            key: keybind.key,
             description: keybind.spell.description,
             icon: keybind.spell.icon,
             name: keybind.spell.name,
@@ -552,10 +586,13 @@ export const duplicateKeybinding = async (req, res, next) => {
 
     const createdKeybinding = await Keybinding.create(duplicatedKeybinding);
 
+    // Populate version information for the response
+    const populatedKeybinding = await Keybinding.findById(createdKeybinding._id).populate('version');
+
     // Increment the duplication count of the original keybinding
     await incrementDuplicationCount(keybinding_id);
 
-    return res.status(200).send(presentOne(createdKeybinding));
+    return res.status(200).send(presentOne(populatedKeybinding));
   } catch (error) {
     console.error('Error duplicating keybinding:', error);
     if (error.name === 'ValidationError') {
@@ -584,9 +621,123 @@ export const getDeletedKeybindings = async (req, res, next) => {
     const deletedKeybindings = await Keybinding.find({
       user_id,
       deleted_at: { $ne: null }
-    }).setOptions({ includeDeleted: true });
+    }).setOptions({ includeDeleted: true }).populate('version');
 
     res.status(200).send(presentMany(deletedKeybindings));
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Migrate keybindings to the latest version
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export const migrateKeybindingsToLatestVersion = async (req, res, next) => {
+  try {
+    Logger.info('Migrating keybindings to latest version');
+
+    const { user_id } = req.decoded;
+
+    // Get the latest version
+    const latestVersion = await Version.findOne().sort({ createdAt: -1 });
+    if (!latestVersion) {
+      return res.status(400).send({ message: 'No versions available' });
+    }
+
+    // Get all keybindings for the user that are not already on the latest version
+    const keybindingsToMigrate = await Keybinding.find({
+      user_id,
+      version: { $ne: latestVersion._id }
+    });
+
+    if (keybindingsToMigrate.length === 0) {
+      return res.status(200).send({
+        message: 'All keybindings are already on the latest version',
+        latestVersion: latestVersion.game_version,
+        migratedCount: 0
+      });
+    }
+
+    // Update all keybindings to the latest version
+    const result = await Keybinding.updateMany(
+      {
+        user_id,
+        version: { $ne: latestVersion._id }
+      },
+      { $set: { version: latestVersion._id } }
+    );
+
+    Logger.info(`Migrated ${result.modifiedCount} keybindings to version ${latestVersion.game_version}`);
+
+    return res.status(200).send({
+      message: 'Keybindings migrated successfully',
+      latestVersion: latestVersion.game_version,
+      migratedCount: result.modifiedCount
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Migrate a specific keybinding to a specific version
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export const migrateKeybindingToVersion = async (req, res, next) => {
+  try {
+    const { keybinding_id } = req.params;
+    const { version_id } = req.body;
+
+    Logger.info(`Migrating keybinding ${keybinding_id} to version ${version_id}`);
+
+    // Check if the keybinding ID is valid
+    const isValidObjectId = /^[0-9a-fA-F]{24}$/.test(keybinding_id);
+    if (!isValidObjectId) {
+      return res.status(400).send({ message: 'Invalid keybinding ID format' });
+    }
+
+    // Check if the version ID is valid
+    const isValidVersionId = /^[0-9a-fA-F]{24}$/.test(version_id);
+    if (!isValidVersionId) {
+      return res.status(400).send({ message: 'Invalid version ID format' });
+    }
+
+    // Find the keybinding
+    const keybinding = await Keybinding.findById(keybinding_id);
+    if (!keybinding) {
+      return res.status(404).send({ message: 'Keybinding not found' });
+    }
+
+    // Verify ownership
+    if (keybinding.user_id?.toString() !== req.decoded.user_id) {
+      return res.status(403).send({ message: 'Not authorized to modify this keybinding' });
+    }
+
+    // Check if the version exists
+    const version = await Version.findById(version_id);
+    if (!version) {
+      return res.status(404).send({ message: 'Version not found' });
+    }
+
+    // Update the keybinding to the new version
+    const updatedKeybinding = await Keybinding.findByIdAndUpdate(
+      keybinding_id,
+      { version: version_id },
+      { new: true }
+    ).populate('version');
+
+    Logger.info(`Successfully migrated keybinding ${keybinding_id} to version ${version.game_version}`);
+
+    return res.status(200).send({
+      message: 'Keybinding migrated successfully',
+      keybinding: presentOne(updatedKeybinding),
+      targetVersion: version.game_version
+    });
   } catch (error) {
     next(error);
   }

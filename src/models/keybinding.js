@@ -118,6 +118,11 @@ const keybindingSchema = new Schema({
     lowercase: true,
     default: null
   },
+  version: {
+    type: Schema.Types.ObjectId,
+    ref: 'Version',
+    required: true
+  },
   keybinds: [{
     type: keybindSchema,
     default: []
