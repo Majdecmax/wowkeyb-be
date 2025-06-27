@@ -120,5 +120,21 @@ export const validateGetAbilities = [
         return true;
       }
       throw new Error('Invalid hero talent for the selected spec');
+    }),
+
+  // Validate gameVersion (optional for routes that include it)
+  param('gameVersion')
+    .optional()
+    .custom((value) => {
+      // Allow 'latest' or version format like '11.1.0'
+      if (value === 'latest') {
+        return true;
+      }
+      // Validate version format (e.g., 11.1.0, 10.2.5, etc.)
+      const versionRegex = /^\d+\.\d+\.\d+$/;
+      if (!versionRegex.test(value)) {
+        throw new Error('Game version must be in format X.Y.Z (e.g., 11.1.0) or "latest"');
+      }
+      return true;
     })
 ];
