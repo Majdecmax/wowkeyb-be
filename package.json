@@ -1,6 +1,6 @@
 {
   "name": "wowkeyb-be",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "description": "Wowkeyb backend",
   "type": "module",
   "main": "app.js",
@@ -26,7 +26,10 @@
     "migrate-keybindings-versions:prod": "node --env-file .env.production src/scripts/migrateKeybindingsToVersions.js",
     "create-version-117:dev": "node --env-file .env.development src/scripts/createVersion117.js",
     "create-version-117:staging": "node --env-file .env.staging src/scripts/createVersion117.js",
-    "create-version-117:prod": "node --env-file .env.production src/scripts/createVersion117.js"
+    "create-version-117:prod": "node --env-file .env.production src/scripts/createVersion117.js",
+    "seed-paladin-abilities:dev": "node --env-file .env.development src/scripts/seedPaladinAbilities.js",
+    "seed-paladin-abilities:staging": "node --env-file .env.staging src/scripts/seedPaladinAbilities.js",
+    "seed-paladin-abilities:prod": "node --env-file .env.production src/scripts/seedPaladinAbilities.js"
   },
   "author": "Logan Born",
   "license": "MIT",

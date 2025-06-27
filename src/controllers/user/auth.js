@@ -81,7 +81,7 @@ export const login = async (req, res) => {
     await Token.create({ user_id: user._id, token, token_type: 'verification' });
 
     //get keybindings
-    const keybindings = await Keybinding.find({ user_id: user._id });
+    const keybindings = await Keybinding.find({ user_id: user._id }).populate('version');
 
     //return with user model, token and user settings
     const payload = {
@@ -281,7 +281,7 @@ export const refreshAccessToken = async (req, res) => {
     Logger.info('Refreshed Token Successfully');
 
     //get keybindings
-    const keybindings = await Keybinding.find({ user_id: user._id });
+    const keybindings = await Keybinding.find({ user_id: user._id }).populate('version');
 
     //return with user model, token and user settings
     const payload = {
