@@ -1,5 +1,6 @@
 import Keybinding from '../../models/keybinding.js';
 import Version from '../../models/version.js';
+import Ability from '../../models/ability.js';
 import { presentOne, presentMany } from '../../presenters/keybindings.js';
 import Logger from '../../utils/logger.js';
 import { generateRandomClassDetails } from '../ability/abilities.js';
@@ -630,6 +631,135 @@ export const getDeletedKeybindings = async (req, res, next) => {
 };
 
 /**
+ * Migrate a specific keybinding to the latest version
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ */
+export const migrateKeybindingToLatestVersion = async (req, res, next) => {
+  try {
+    const { keybinding_id } = req.params;
+
+    Logger.info(`Migrating keybinding ${keybinding_id} to latest version`);
+
+    // Check if the keybinding ID is valid
+    const isValidObjectId = /^[0-9a-fA-F]{24}$/.test(keybinding_id);
+    if (!isValidObjectId) {
+      return res.status(400).send({ message: 'Invalid keybinding ID format' });
+    }
+
+    // Find the keybinding
+    const keybinding = await Keybinding.findById(keybinding_id).populate('version');
+    if (!keybinding) {
+      return res.status(404).send({ message: 'Keybinding not found' });
+    }
+
+    // Verify ownership
+    if (keybinding.user_id?.toString() !== req.decoded.user_id) {
+      return res.status(403).send({ message: 'Not authorized to modify this keybinding' });
+    }
+
+    // Get the latest version
+    const latestVersion = await Version.findOne().sort({ createdAt: -1 });
+    if (!latestVersion) {
+      return res.status(400).send({ message: 'No versions available' });
+    }
+
+    // Check if already on latest version
+    if (keybinding.version?._id?.toString() === latestVersion._id.toString()) {
+      return res.status(200).send({
+        message: 'Keybinding is already on the latest version',
+        latestVersion: latestVersion.game_version,
+        removedKeybindsCount: 0
+      });
+    }
+
+    let removedKeybindsCount = 0;
+    const originalKeybindsCount = keybinding.keybinds?.length || 0;
+    let updatedKeybinds = keybinding.keybinds || [];
+
+    if (keybinding.keybinds && keybinding.keybinds.length > 0) {
+      // Get all valid abilities for this class/spec/hero_talent in the latest version
+      const abilityQuery = {
+        class: keybinding.class,
+        game_version: latestVersion._id,
+        is_active: true
+      };
+
+      // Get class abilities
+      const classAbilities = await Ability.find({
+        ...abilityQuery,
+        spec: null,
+        ability_type: 'class'
+      });
+
+      // Get spec abilities
+      const specAbilities = await Ability.find({
+        ...abilityQuery,
+        spec: keybinding.spec,
+        ability_type: 'spec'
+      });
+
+      // Get hero talent abilities
+      let heroTalentAbilities = [];
+      if (keybinding.hero_talent) {
+        heroTalentAbilities = await Ability.find({
+          ...abilityQuery,
+          hero_talent: keybinding.hero_talent,
+          ability_type: 'hero_talent'
+        });
+      }
+
+      // Combine all valid abilities
+      const validAbilities = [
+        ...classAbilities,
+        ...specAbilities,
+        ...heroTalentAbilities
+      ];
+
+      // Create a set of valid spell IDs for quick lookup
+      const validSpellIds = new Set(validAbilities.map(ability => ability.spell_id));
+
+      // Filter out keybinds for abilities that don't exist in the latest version
+      updatedKeybinds = keybinding.keybinds.filter(keybind => {
+        const spellId = keybind.spell?.spell_id;
+        const isValid = validSpellIds.has(spellId);
+
+        if (!isValid) {
+          Logger.info(`Removing keybind for spell ${spellId} (${keybind.spell?.name}) from keybinding ${keybinding_id} - not available in version ${latestVersion.game_version}`);
+          removedKeybindsCount++;
+        }
+
+        return isValid;
+      });
+
+      Logger.info(`Removed ${removedKeybindsCount} invalid keybinds from keybinding ${keybinding_id}`);
+    }
+
+    // Update the keybinding to the latest version
+    const updatedKeybinding = await Keybinding.findByIdAndUpdate(
+      keybinding_id,
+      {
+        version: latestVersion._id,
+        keybinds: updatedKeybinds
+      },
+      { new: true }
+    ).populate('version');
+
+    Logger.info(`Successfully migrated keybinding ${keybinding_id} to version ${latestVersion.game_version}`);
+
+    return res.status(200).send({
+      message: 'Keybinding migrated successfully',
+      keybinding: presentOne(updatedKeybinding),
+      latestVersion: latestVersion.game_version,
+      removedKeybindsCount
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Migrate keybindings to the latest version
  * @param {import('express').Request} req
  * @param {import('express').Response} res
@@ -651,31 +781,108 @@ export const migrateKeybindingsToLatestVersion = async (req, res, next) => {
     const keybindingsToMigrate = await Keybinding.find({
       user_id,
       version: { $ne: latestVersion._id }
-    });
+    }).populate('version');
 
     if (keybindingsToMigrate.length === 0) {
       return res.status(200).send({
         message: 'All keybindings are already on the latest version',
         latestVersion: latestVersion.game_version,
-        migratedCount: 0
+        migratedCount: 0,
+        removedKeybindsCount: 0
       });
     }
 
-    // Update all keybindings to the latest version
-    const result = await Keybinding.updateMany(
-      {
-        user_id,
-        version: { $ne: latestVersion._id }
-      },
-      { $set: { version: latestVersion._id } }
-    );
+    let totalRemovedKeybinds = 0;
+    let migratedCount = 0;
 
-    Logger.info(`Migrated ${result.modifiedCount} keybindings to version ${latestVersion.game_version}`);
+    // Process each keybinding individually to clean up invalid keybinds
+    for (const keybinding of keybindingsToMigrate) {
+      let hasChanges = false;
+      const originalKeybindsCount = keybinding.keybinds?.length || 0;
+
+      if (keybinding.keybinds && keybinding.keybinds.length > 0) {
+        // Get all valid abilities for this class/spec/hero_talent in the latest version
+        const abilityQuery = {
+          class: keybinding.class,
+          game_version: latestVersion._id,
+          is_active: true
+        };
+
+        // Get class abilities
+        const classAbilities = await Ability.find({
+          ...abilityQuery,
+          spec: null,
+          ability_type: 'class'
+        });
+
+        // Get spec abilities
+        const specAbilities = await Ability.find({
+          ...abilityQuery,
+          spec: keybinding.spec,
+          ability_type: 'spec'
+        });
+
+        // Get hero talent abilities
+        let heroTalentAbilities = [];
+        if (keybinding.hero_talent) {
+          heroTalentAbilities = await Ability.find({
+            ...abilityQuery,
+            hero_talent: keybinding.hero_talent,
+            ability_type: 'hero_talent'
+          });
+        }
+
+        // Combine all valid abilities
+        const validAbilities = [
+          ...classAbilities,
+          ...specAbilities,
+          ...heroTalentAbilities
+        ];
+
+        // Create a set of valid spell IDs for quick lookup
+        const validSpellIds = new Set(validAbilities.map(ability => ability.spell_id));
+
+        // Filter out keybinds for abilities that don't exist in the latest version
+        const filteredKeybinds = keybinding.keybinds.filter(keybind => {
+          const spellId = keybind.spell?.spell_id;
+          const isValid = validSpellIds.has(spellId);
+
+          if (!isValid) {
+            Logger.info(`Removing keybind for spell ${spellId} (${keybind.spell?.name}) from keybinding ${keybinding._id} - not available in version ${latestVersion.game_version}`);
+            totalRemovedKeybinds++;
+          }
+
+          return isValid;
+        });
+
+        // Update the keybinding if keybinds were removed
+        if (filteredKeybinds.length !== originalKeybindsCount) {
+          keybinding.keybinds = filteredKeybinds;
+          hasChanges = true;
+
+          Logger.info(`Removed ${originalKeybindsCount - filteredKeybinds.length} invalid keybinds from keybinding ${keybinding._id}`);
+        }
+      }
+
+      // Update the keybinding to the latest version (and save any keybind changes)
+      await Keybinding.findByIdAndUpdate(
+        keybinding._id,
+        {
+          version: latestVersion._id,
+          ...(hasChanges && { keybinds: keybinding.keybinds })
+        }
+      );
+
+      migratedCount++;
+    }
+
+    Logger.info(`Migrated ${migratedCount} keybindings to version ${latestVersion.game_version}, removed ${totalRemovedKeybinds} invalid keybinds`);
 
     return res.status(200).send({
       message: 'Keybindings migrated successfully',
       latestVersion: latestVersion.game_version,
-      migratedCount: result.modifiedCount
+      migratedCount,
+      removedKeybindsCount: totalRemovedKeybinds
     });
   } catch (error) {
     next(error);
