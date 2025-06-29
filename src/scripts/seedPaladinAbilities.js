@@ -335,21 +335,11 @@ const coreAbilities = [
     cost: 'None',
     cost_amount: 0
   },
-  {
-    name: 'Aura Mastery',
-    spell_id: '31821',
-    description: 'Empowers your chosen aura for 8 sec.',
-    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_auramastery.jpg',
-    class: 'paladin',
-    spec: null,
-    hero_talent: null,
-    ability_type: 'class',
-    level_required: 0,
-    cooldown: 180,
-    range: 0,
-    cost: 'None',
-    cost_amount: 0
-  },
+];
+
+// Spec/hero talent actives and replacements
+const specAndHeroActives = [
+  // Holy spec actives
   {
     name: 'Beacon of Light',
     spell_id: '53563',
@@ -365,11 +355,21 @@ const coreAbilities = [
     cost: 'None',
     cost_amount: 0
   },
-];
-
-// Spec/hero talent actives and replacements
-const specAndHeroActives = [
-  // Holy spec actives
+  {
+    name: 'Aura Mastery',
+    spell_id: '31821',
+    description: 'Empowers your chosen aura for 8 sec.',
+    icon: 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_auramastery.jpg',
+    class: 'paladin',
+    spec: 'holy',
+    hero_talent: null,
+    ability_type: 'spec',
+    level_required: 0,
+    cooldown: 180,
+    range: 0,
+    cost: 'None',
+    cost_amount: 0
+  },
   {
     name: 'Holy Shock',
     spell_id: '20473',
