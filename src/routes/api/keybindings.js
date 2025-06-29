@@ -47,9 +47,10 @@ router.delete('/:keybinding_id/permanent',
   validateGetKeybinding,
   AuthnMiddleware.decode,
   KeybindingsController.permanentlyDeleteKeybinding)
-router.post('/migrate-to-latest',
+router.post('/:keybinding_id/migrate-to-latest',
+  validateGetKeybinding,
   AuthnMiddleware.decode,
-  KeybindingsController.migrateKeybindingsToLatestVersion)
+  KeybindingsController.migrateKeybindingToLatestVersion)
 router.post('/:keybinding_id/migrate',
   validateGetKeybinding,
   AuthnMiddleware.decode,
