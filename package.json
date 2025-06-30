@@ -1,6 +1,6 @@
 {
   "name": "wowkeyb-be",
-  "version": "1.16.1",
+  "version": "1.17.0",
   "description": "Wowkeyb backend",
   "type": "module",
   "main": "app.js",
@@ -36,9 +36,12 @@
     "seed-priest-abilities:dev": "node --env-file .env.development src/scripts/seeds/abilities/seedPriestAbilities.js",
     "seed-priest-abilities:staging": "node --env-file .env.staging src/scripts/seeds/abilities/seedPriestAbilities.js",
     "seed-priest-abilities:prod": "node --env-file .env.production src/scripts/seeds/abilities/seedPriestAbilities.js",
-    "seed-all-abilities:dev": "npm run seed-paladin-abilities:dev && npm run seed-warrior-abilities:dev && npm run seed-priest-abilities:dev",
-    "seed-all-abilities:staging": "npm run seed-paladin-abilities:staging && npm run seed-warrior-abilities:staging && npm run seed-priest-abilities:staging",
-    "seed-all-abilities:prod": "npm run seed-paladin-abilities:prod && npm run seed-warrior-abilities:prod && npm run seed-priest-abilities:prod"
+    "seed-mage-abilities:dev": "node --env-file .env.development src/scripts/seeds/abilities/seedMageAbilities.js",
+    "seed-mage-abilities:staging": "node --env-file .env.staging src/scripts/seeds/abilities/seedMageAbilities.js",
+    "seed-mage-abilities:prod": "node --env-file .env.production src/scripts/seeds/abilities/seedMageAbilities.js",
+    "seed-all-abilities:dev": "npm run seed-paladin-abilities:dev && npm run seed-warrior-abilities:dev && npm run seed-priest-abilities:dev && npm run seed-mage-abilities:dev",
+    "seed-all-abilities:staging": "npm run seed-paladin-abilities:staging && npm run seed-warrior-abilities:staging && npm run seed-priest-abilities:staging && npm run seed-mage-abilities:staging",
+    "seed-all-abilities:prod": "npm run seed-paladin-abilities:prod && npm run seed-warrior-abilities:prod && npm run seed-priest-abilities:prod && npm run seed-mage-abilities:prod"
   },
   "author": "Logan Born",
   "license": "MIT",
