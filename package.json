@@ -1,6 +1,6 @@
 {
   "name": "wowkeyb-be",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "description": "Wowkeyb backend",
   "type": "module",
   "main": "app.js",
@@ -32,7 +32,10 @@
     "seed-paladin-abilities:prod": "node --env-file .env.production src/scripts/seedPaladinAbilities.js",
     "seed-warrior-abilities:dev": "node --env-file .env.development src/scripts/seedWarriorAbilities.js",
     "seed-warrior-abilities:staging": "node --env-file .env.staging src/scripts/seedWarriorAbilities.js",
-    "seed-warrior-abilities:prod": "node --env-file .env.production src/scripts/seedWarriorAbilities.js"
+    "seed-warrior-abilities:prod": "node --env-file .env.production src/scripts/seedWarriorAbilities.js",
+    "seed-priest-abilities:dev": "node --env-file .env.development src/scripts/seedPriestAbilities.js",
+    "seed-priest-abilities:staging": "node --env-file .env.staging src/scripts/seedPriestAbilities.js",
+    "seed-priest-abilities:prod": "node --env-file .env.production src/scripts/seedPriestAbilities.js"
   },
   "author": "Logan Born",
   "license": "MIT",

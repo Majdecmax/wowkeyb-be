@@ -80,13 +80,17 @@ const specAbilities = {
         icon: 'https://wow.zamimg.com/images/wow/icons/large/inv_sword_48.jpg'
       },
       {
-        id: 3, spellId: 213644, name: 'Cleanse Toxins', description: 'Cleanses a friendly target, removing all Poison and Disease effects.',
+        id: 4, spellId: 213644, name: 'Cleanse Toxins', description: 'Cleanses a friendly target, removing all Poison and Disease effects.',
         icon: 'https://wow.zamimg.com/images/wow/icons/large/inv_sword_48.jpg'
       },
       {
-        id: 4, spellId: 86659, name: 'Guardian of Ancient Kings', description: 'Empowers you with the spirit of ancient kings, reducing all damage you take by 50% for 8 sec.',
+        id: 5, spellId: 86659, name: 'Guardian of Ancient Kings', description: 'Empowers you with the spirit of ancient kings, reducing all damage you take by 50% for 8 sec.',
         icon: 'https://wow.zamimg.com/images/wow/icons/large/inv_sword_48.jpg'
       },
+      {
+        id: 6, spellId: 53600, name: 'Shield of the Righteous', description: 'Slams enemies in front of you with your shield, causing Holy damage, and increasing your armor.',
+        icon: 'https://wow.zamimg.com/images/wow/icons/large/ability_paladin_shieldofvengeance.jpg'
+      }
     ],
     'lightsmith': [],
     'templar': []
@@ -140,8 +144,11 @@ const specAbilities = {
       {
         id: 12, spellId: 343527, name: 'Execution Sentence', description: 'A hammer slowly falls from the sky upon the target, after 8 sec, they suffer 20% of the damage taken from your abilities as Holy damage during that time.',
         icon: 'https://wow.zamimg.com/images/wow/icons/large/inv_sword_48.jpg'
+      },
+      {
+        id: 13, spellId: 53600, name: 'Shield of the Righteous', description: 'Slams enemies in front of you with your shield, causing Holy damage, and increasing your armor.',
+        icon: 'https://wow.zamimg.com/images/wow/icons/large/ability_paladin_shieldofvengeance.jpg'
       }
-
     ],
     'herald-of-the-sun': [],
     'templar': []

@@ -115,7 +115,7 @@ export const getAbilities = async (req, res) => {
       cost: ability.cost,
       costAmount: ability.cost_amount,
       gameVersion: ability.game_version.game_version
-    }));
+    })).sort((a, b) => a.name.localeCompare(b.name));
 
     Logger.info(`Retrieved ${transformedAbilities.length} abilities for ${wowClass} ${spec} ${heroTalent} (version: ${targetVersion.game_version})`);
 
@@ -198,7 +198,7 @@ export const getAbilitiesByVersion = async (req, res) => {
       cost: ability.cost,
       costAmount: ability.cost_amount,
       gameVersion: ability.game_version.game_version
-    }));
+    })).sort((a, b) => a.name.localeCompare(b.name));
 
     Logger.info(`Retrieved ${transformedAbilities.length} abilities for ${wowClass} ${spec} ${heroTalent} (version: ${version.game_version})`);
 
@@ -283,7 +283,7 @@ export const getAbilitiesByGameVersion = async (req, res) => {
       cost: ability.cost,
       costAmount: ability.cost_amount,
       gameVersion: ability.game_version.game_version
-    }));
+    })).sort((a, b) => a.name.localeCompare(b.name));
 
     Logger.info(`Retrieved ${transformedAbilities.length} abilities for ${wowClass} ${spec} ${heroTalent} (version: ${targetVersion.game_version})`);
 
@@ -368,7 +368,7 @@ export const getAbilitiesLatest = async (req, res) => {
       cost: ability.cost,
       costAmount: ability.cost_amount,
       gameVersion: ability.game_version.game_version
-    }));
+    })).sort((a, b) => a.name.localeCompare(b.name));
 
     Logger.info(`Retrieved ${transformedAbilities.length} abilities for ${wowClass} ${spec} ${heroTalent} (latest version: ${targetVersion.game_version})`);
 

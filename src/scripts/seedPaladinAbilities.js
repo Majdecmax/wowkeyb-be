@@ -21,21 +21,6 @@ const coreAbilities = [
     cost_amount: 0
   },
   {
-    name: 'Shield of the Righteous',
-    spell_id: '53600',
-    description: 'Slams enemies in front of you with your shield, causing Holy damage, and reducing the cooldown of Crusader Strike.',
-    icon: 'https://wow.zamimg.com/images/wow/icons/large/ability_paladin_shieldofvengeance.jpg',
-    class: 'paladin',
-    spec: null,
-    hero_talent: null,
-    ability_type: 'class',
-    level_required: 2,
-    cooldown: 0,
-    range: 5,
-    cost: 'Holy Power',
-    cost_amount: 1
-  },
-  {
     name: 'Judgment',
     spell_id: '275779',
     description: 'Judges the target, dealing Holy damage.',
@@ -587,7 +572,8 @@ const specAndHeroActives = [
     cooldown: 0,
     range: 5,
     cost: 'Holy Power',
-    cost_amount: 1
+    cost_amount: 1,
+    replaces: 'Shield of the Righteous'
   },
   {
     name: 'Light of Dawn',
@@ -956,6 +942,38 @@ const specAndHeroActives = [
     cost: 'Holy Power',
     cost_amount: 1
   },
+  {
+    name: 'Shield of the Righteous',
+    spell_id: '53600',
+    description: 'Slams enemies in front of you with your shield, causing Holy damage, and increasing your armor.',
+    icon: 'https://wow.zamimg.com/images/wow/icons/large/ability_paladin_shieldofvengeance.jpg',
+    class: 'paladin',
+    spec: 'protection',
+    hero_talent: null,
+    ability_type: 'spec',
+    level_required: 0,
+    cooldown: 0,
+    range: 5,
+    cost: 'Holy Power',
+    cost_amount: 1,
+    replaces: 'Shield of the Righteous'
+  },
+  {
+    name: 'Shield of the Righteous',
+    spell_id: '53600',
+    description: 'Slams enemies in front of you with your shield, causing Holy damage, and increasing your armor.',
+    icon: 'https://wow.zamimg.com/images/wow/icons/large/ability_paladin_shieldofvengeance.jpg',
+    class: 'paladin',
+    spec: 'retribution',
+    hero_talent: null,
+    ability_type: 'spec',
+    level_required: 0,
+    cooldown: 0,
+    range: 5,
+    cost: 'Holy Power',
+    cost_amount: 1,
+    replaces: 'Shield of the Righteous'
+  }
 ];
 
 async function seedPaladinAbilities() {
