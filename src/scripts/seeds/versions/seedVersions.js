@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import Version from '../models/version.js';
-import Config from '../config/config.js';
+import Version from '../../../models/version.js';
+import Config from '../../../config/config.js';
 
 /**
  * Seed script to add initial versions data
