@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import Ability from '../models/ability.js';
-import Version from '../models/version.js';
-import Config from '../config/config.js';
+import Ability from '../../../models/ability.js';
+import Version from '../../../models/version.js';
+import Config from '../../../config/config.js';
 
 // Core/class priest abilities
 const coreAbilities = [
